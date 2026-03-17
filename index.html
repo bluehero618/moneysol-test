@@ -491,7 +491,13 @@ async function generateReport(){
     }
 
     console.log('流式接收完成，总字数:', fullText.length);
-    renderResult(scores, type, fullText);
+    // 清理Markdown格式符号
+    const cleanText = fullText
+      .replace(/\*\*(.+?)\*\*/g, '$1')
+      .replace(/\*(.+?)\*/g, '$1')
+      .replace(/#{1,6}\s/g, '')
+      .replace(/`(.+?)`/g, '$1');
+    renderResult(scores, type, cleanText);
 
   }catch(e){
     console.error('请求失败:', e);

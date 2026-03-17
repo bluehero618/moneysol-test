@@ -17,16 +17,19 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${process.env.SILICONFLOW_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'Qwen/Qwen2.5-72B-Instruct',
+        model: 'Pro/deepseek-ai/DeepSeek-V3',
         max_tokens: 6000,
         temperature: 0.75,
         stream: true,
         messages: [
           {
             role: 'system',
-            content: '你是一位金钱心理学专家。报告要有三层穿透力：第一层描述表象行为，第二层揭示用户自己的核心策略，第三层指出用户从未意识到的深层恐惧和无意识习得。严格按格式输出，不截断，不在===标记外添加任何文字。'
+            content: '你是一位金钱心理学专家。报告要有三层穿透力：第一层描述表象行为，第二层揭示用户自己的核心策略，第三层指出用户从未意识到的深层恐惧和无意识习得。严格按格式输出，不截断，不在===标记外添加任何文字，不使用**等Markdown格式符号。'
           },
-          { role: 'user', content: prompt }
+          {
+            role: 'user',
+            content: prompt
+          }
         ]
       })
     });
@@ -36,7 +39,6 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: err.error?.message || 'API error' });
     }
 
-    // 流式转发：边接收边发送，不等全部生成完
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('X-Accel-Buffering', 'no');
@@ -51,7 +53,7 @@ export default async function handler(req, res) {
 
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split('\n');
-      buffer = lines.pop(); // 保留不完整的最后一行
+      buffer = lines.pop();
 
       for (const line of lines) {
         const trimmed = line.trim();
@@ -62,12 +64,9 @@ export default async function handler(req, res) {
           const json = JSON.parse(trimmed.slice(6));
           const delta = json.choices?.[0]?.delta?.content || '';
           if (delta) {
-            // 发送每个文字片段给前端
             res.write(`data: ${JSON.stringify({ delta })}\n\n`);
           }
-        } catch (e) {
-          // 忽略解析错误的行
-        }
+        } catch (e) {}
       }
     }
 
