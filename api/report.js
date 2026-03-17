@@ -10,21 +10,21 @@ export default async function handler(req, res) {
   if (!prompt) return res.status(400).json({ error: 'Missing prompt' });
 
   try {
-    const upstream = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
+    const response = await fetch('https://api.siliconflow.cn/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${process.env.SILICONFLOW_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'Pro/deepseek-ai/DeepSeek-V3',
-        max_tokens: 6000,
-        temperature: 0.75,
-        stream: true,
+        model: 'Qwen/Qwen3-8B',
+        max_tokens: 4000,
+        temperature: 0.7,
+        stream: false,
         messages: [
           {
             role: 'system',
-            content: '你是一位金钱心理学专家。报告要有三层穿透力：第一层描述表象行为，第二层揭示用户自己的核心策略，第三层指出用户从未意识到的深层恐惧和无意识习得。严格按格式输出，不截断，不在===标记外添加任何文字，不使用**等Markdown格式符号。'
+            content: '你是一位金钱心理学专家。每个想法单独一段。短句。不解释，直接陈述逻辑。不用比喻，不用Q编号，不用**等格式符号，不用"这说明""这意味着"。严格按===格式输出，===外不加任何文字。'
           },
           {
             role: 'user',
@@ -34,51 +34,15 @@ export default async function handler(req, res) {
       })
     });
 
-    if (!upstream.ok) {
-      const err = await upstream.json();
-      return res.status(500).json({ error: err.error?.message || 'API error' });
+    const data = await response.json();
+    if (!response.ok) {
+      return res.status(500).json({ error: data.error?.message || 'API error' });
     }
 
-    res.setHeader('Content-Type', 'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('X-Accel-Buffering', 'no');
-
-    const reader = upstream.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop();
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed || trimmed === 'data: [DONE]') continue;
-        if (!trimmed.startsWith('data: ')) continue;
-
-        try {
-          const json = JSON.parse(trimmed.slice(6));
-          const delta = json.choices?.[0]?.delta?.content || '';
-          if (delta) {
-            res.write(`data: ${JSON.stringify({ delta })}\n\n`);
-          }
-        } catch (e) {}
-      }
-    }
-
-    res.write('data: [DONE]\n\n');
-    res.end();
+    const text = data.choices?.[0]?.message?.content || '';
+    return res.status(200).json({ text });
 
   } catch (error) {
-    if (!res.headersSent) {
-      res.status(500).json({ error: error.message });
-    } else {
-      res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
-      res.end();
-    }
+    return res.status(500).json({ error: error.message });
   }
 }
