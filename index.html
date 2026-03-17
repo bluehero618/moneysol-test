@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>你被童年金钱创伤影响了多深？</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:       #0d0c0a;
+  --bg2:      #161411;
+  --bg3:      #1e1c18;
+  --bg4:      #252219;
+  --gold:     #c8a84b;
+  --gold-lt:  #e4cc7e;
+  --gold-dim: #7a6428;
+  --text:     #ece4d4;
+  --text2:    #a09070;
+  --text3:    #564e3e;
+  --accent:   #c97a5a;
+  --teal:     #5a9e8a;
+  --purple:   #9278b8;
+  --blue:     #5a8ec8;
+  --green:    #6aaa7a;
+  --br:       rgba(200,168,75,0.12);
+  --br2:      rgba(200,168,75,0.35);
+  --r:        14px;
+  --r-sm:     8px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans SC', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* grain */
+body::after {
+  content:'';
+  position:fixed; inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:999;
+}
+
+/* ─── SCREEN SYSTEM ─── */
+.screen { display:none; animation: fadeUp .35s ease both; }
+.screen.active { display:block; }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(18px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* ═══════════════════════════════════
+   COVER
+═══════════════════════════════════ */
+#cover {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 28px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ambient glow */
+#cover::before {
+  content:'';
+  position:absolute;
+  top:-100px; left:50%;
+  transform:translateX(-50%);
+  width:400px; height:400px;
+  background: radial-gradient(ellipse, rgba(200,168,75,0.07) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+.cover-eyebrow {
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 28px;
+  font-weight: 300;
+}
+
+.cover-ornament {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+.cover-ornament span {
+  display: block;
+  height: 1px;
+  width: 40px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim));
+}
+.cover-ornament span:last-child {
+  background: linear-gradient(90deg, var(--gold-dim), transparent);
+}
+.cover-ornament i {
+  font-style: normal;
+  color: var(--gold);
+  font-size: 14px;
+}
+
+.cover-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+.cover-title em {
+  color: var(--gold);
+  font-style: normal;
+  display: block;
+}
+
+.cover-sub {
+  font-size: 14px;
+  color: var(--text2);
+  line-height: 1.9;
+  max-width: 280px;
+  margin: 0 auto 40px;
+  font-weight: 300;
+}
+
+.cover-pills {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+.pill {
+  background: var(--bg3);
+  border: 1px solid var(--br);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 300;
+}
+.pill strong { color: var(--gold); font-weight: 600; }
+
+.btn-primary {
+  background: linear-gradient(135deg, #b8942e 0%, var(--gold-lt) 50%, #b8942e 100%);
+  color: #140f00;
+  border: none;
+  padding: 17px 52px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: all .25s;
+  box-shadow: 0 6px 28px rgba(200,168,75,0.28);
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+}
+.btn-primary:active { transform: scale(.97); box-shadow: 0 2px 12px rgba(200,168,75,0.2); }
+
+.cover-footnote {
+  margin-top: 16px;
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: .5px;
+}
+
+/* ═══════════════════════════════════
+   QUIZ
+═══════════════════════════════════ */
+#quiz { min-height: 100dvh; padding-bottom: 110px; }
+
+.quiz-top {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(13,12,10,0.92);
+  backdrop-filter: blur(12px);
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid var(--br);
+}
+
+.quiz-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.chapter-badge {
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  color: var(--gold-dim);
+  font-weight: 300;
+}
+
+.q-counter {
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.prog-track {
+  height: 2px;
+  background: var(--bg4);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  border-radius: 2px;
+  transition: width .5s cubic-bezier(.4,0,.2,1);
+}
+
+/* chapter marker */
+.ch-marker {
+  padding: 28px 20px 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ch-marker-text {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--gold-dim);
+  white-space: nowrap;
+  font-weight: 300;
+}
+.ch-marker-line {
+  flex:1; height:1px;
+  background: linear-gradient(90deg, var(--br2), transparent);
+}
+
+.q-wrap {
+  padding: 24px 20px 8px;
+}
+
+.q-num {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--gold-dim);
+  margin-bottom: 10px;
+  font-weight: 300;
+}
+
+.q-text {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 19px;
+  line-height: 1.65;
+  color: var(--text);
+  margin-bottom: 24px;
+  font-weight: 400;
+}
+
+.opts { display: flex; flex-direction: column; gap: 9px; }
+
+.opt {
+  background: var(--bg2);
+  border: 1px solid var(--br);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: border-color .2s, background .2s;
+  -webkit-user-select: none; user-select: none;
+}
+.opt:active { transform: scale(.99); }
+.opt.sel {
+  border-color: var(--gold);
+  background: rgba(200,168,75,0.07);
+}
+
+.opt-radio {
+  width: 20px; height: 20px;
+  border: 1.5px solid var(--text3);
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: all .2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.opt.sel .opt-radio {
+  border-color: var(--gold);
+  background: var(--gold);
+}
+.opt.sel .opt-radio::after {
+  content:'';
+  width:7px; height:7px;
+  border-radius:50%;
+  background:#140f00;
+}
+.opt-label {
+  font-size: 15px;
+  color: var(--text2);
+  font-weight: 300;
+  line-height: 1.4;
+  transition: color .2s;
+}
+.opt.sel .opt-label { color: var(--text); }
+
+.quiz-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  padding: 12px 20px 28px;
+  background: linear-gradient(0deg, var(--bg) 65%, transparent);
+  z-index: 40;
+}
+.btn-next {
+  width: 100%;
+  background: var(--gold);
+  color: #140f00;
+  border: none;
+  padding: 16px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer;
+  letter-spacing: 1px;
+  opacity: .25;
+  pointer-events: none;
+  transition: opacity .25s, box-shadow .25s;
+}
+.btn-next.on {
+  opacity: 1;
+  pointer-events: all;
+  box-shadow: 0 4px 22px rgba(200,168,75,.28);
+}
+.btn-next:active { transform: scale(.98); }
+
+/* ═══════════════════════════════════
+   LOADING
+═══════════════════════════════════ */
+#loading {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 28px;
+}
+
+.spinner {
+  width: 56px; height: 56px;
+  border: 2px solid var(--bg3);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 36px;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.loading-h { font-family:'Noto Serif SC',serif; font-size:20px; margin-bottom:10px; }
+.loading-p { font-size:13px; color:var(--text2); line-height:1.9; max-width:240px; font-weight:300; }
+
+.loading-steps {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 260px;
+}
+.step-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text3);
+  font-weight: 300;
+  opacity: 0;
+  animation: fadeIn .5s ease both;
+}
+.step-row:nth-child(1) { animation-delay: .3s; }
+.step-row:nth-child(2) { animation-delay: 1.2s; }
+.step-row:nth-child(3) { animation-delay: 2.2s; }
+@keyframes fadeIn { to { opacity:1; } }
+
+.step-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold-dim);
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════
+   RESULT
+═══════════════════════════════════ */
+#result { padding-bottom: 60px; }
+
+/* hero */
+.r-hero {
+  padding: 52px 24px 36px;
+  text-align: center;
+  background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--br);
+  position: relative;
+  overflow: hidden;
+}
+.r-hero::before {
+  content:'';
+  position:absolute; top:-80px; left:50%;
+  transform:translateX(-50%);
+  width:320px; height:320px;
+  background:radial-gradient(ellipse, rgba(200,168,75,0.06) 0%, transparent 70%);
+  pointer-events:none;
+}
+.r-eyebrow { font-size:10px; letter-spacing:3px; color:var(--gold-dim); margin-bottom:14px; font-weight:300; }
+
+.r-type {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 6px;
+  font-weight: 300;
+  letter-spacing: 1px;
+}
+
+.r-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.4;
+  margin-bottom: 28px;
+  padding: 0 12px;
+}
+
+/* score ring */
+.ring-wrap {
+  position: relative;
+  width: 128px; height: 128px;
+  margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+}
+.ring-wrap svg { position:absolute; inset:0; transform:rotate(-90deg); }
+.ring-bg  { fill:none; stroke:var(--bg3); stroke-width:5; }
+.ring-val { fill:none; stroke:var(--gold); stroke-width:5; stroke-linecap:round;
+            stroke-dasharray:339.3; stroke-dashoffset:339.3;
+            transition: stroke-dashoffset 1.8s cubic-bezier(.2,.8,.3,1); }
+.ring-inner { text-align:center; position:relative; z-index:1; }
+.ring-num {
+  font-family:'Noto Serif SC',serif;
+  font-size:38px; font-weight:700; color:var(--gold);
+  display:block; line-height:1;
+}
+.ring-label { font-size:12px; color:var(--gold-dim); margin-top:2px; }
+
+.r-hero-desc {
+  font-size:14px; color:var(--text2); line-height:1.85;
+  max-width:300px; margin:0 auto;
+  font-weight:300;
+}
+
+/* dimensions */
+.dims-section {
+  padding: 28px 20px;
+  border-bottom: 1px solid var(--br);
+}
+
+.sec-head {
+  font-family:'Noto Serif SC',serif;
+  font-size:15px; font-weight:600;
+  margin-bottom:18px;
+  display:flex; align-items:center; gap:10px;
+}
+.sec-head::after { content:''; flex:1; height:1px; background:var(--br); }
+
+.dim-row { margin-bottom:14px; }
+.dim-top { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:5px; }
+.dim-name { font-size:13px; color:var(--text2); font-weight:300; }
+.dim-pct  { font-size:13px; color:var(--gold); font-family:'Noto Serif SC',serif; }
+.dim-track { height:3px; background:var(--bg3); border-radius:3px; overflow:hidden; }
+.dim-bar   { height:100%; border-radius:3px; width:0; transition:width 1.3s cubic-bezier(.2,.8,.3,1); }
+
+/* analysis blocks */
+.analysis { padding: 0 20px; }
+
+.a-block {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--br);
+}
+.a-block:last-child { border-bottom: none; }
+
+.a-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(200,168,75,0.08);
+  border: 1px solid rgba(200,168,75,0.18);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  font-weight: 300;
+}
+
+.a-head {
+  font-family:'Noto Serif SC',serif;
+  font-size:18px; font-weight:600;
+  line-height:1.5;
+  margin-bottom:12px;
+}
+
+.a-body {
+  font-size:14px; color:var(--text2); line-height:1.95;
+  font-weight:300;
+}
+.a-body strong { color:var(--text); font-weight:500; }
+.a-body em { color:var(--gold); font-style:normal; }
+
+/* paywall */
+.paywall-wrap {
+  margin: 4px 20px 0;
+  border: 1px solid var(--br);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.pw-blur {
+  padding: 24px 20px;
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+  opacity: .5;
+}
+.pw-blur .a-block { border:none; padding:0; }
+
+.pw-gate {
+  border-top: 1px solid var(--br);
+  background: linear-gradient(180deg, rgba(22,20,17,0) 0%, var(--bg2) 30%);
+  padding: 28px 20px 28px;
+  text-align: center;
+}
+
+.pw-icon {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(200,168,75,0.1);
+  border: 1px solid rgba(200,168,75,0.2);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 18px;
+}
+
+.pw-h { font-family:'Noto Serif SC',serif; font-size:19px; font-weight:700; margin-bottom:8px; }
+.pw-sub { font-size:13px; color:var(--text2); line-height:1.75; margin-bottom:22px; font-weight:300; }
+
+.pw-list {
+  display: flex; flex-direction: column; gap:9px;
+  margin-bottom: 24px; text-align:left;
+}
+.pw-item {
+  display:flex; align-items:flex-start; gap:9px;
+  font-size:13px; color:var(--text2); font-weight:300; line-height:1.5;
+}
+.pw-item::before {
+  content:'✦';
+  color:var(--gold); font-size:9px; flex-shrink:0;
+  margin-top:3px;
+}
+
+.btn-pay {
+  width:100%;
+  background: linear-gradient(135deg, #b8942e 0%, var(--gold-lt) 50%, #b8942e 100%);
+  color: #140f00;
+  border:none;
+  padding:16px;
+  border-radius:50px;
+  font-size:16px; font-weight:700;
+  font-family:'Noto Sans SC',sans-serif;
+  cursor:pointer; letter-spacing:1px;
+  box-shadow:0 4px 24px rgba(200,168,75,.25);
+  transition:all .25s;
+}
+.btn-pay:active { transform:scale(.98); }
+
+.pw-note { font-size:11px; color:var(--text3); margin-top:10px; }
+
+/* quote card */
+.quote-card {
+  margin: 28px 20px 0;
+  padding: 28px 22px;
+  border: 1px solid var(--br);
+  border-radius: 18px;
+  background: var(--bg2);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.quote-card::before {
+  content:'"';
+  position:absolute; top:-10px; left:10px;
+  font-size:100px; line-height:1;
+  color:rgba(200,168,75,0.04);
+  font-family:Georgia,serif;
+  pointer-events:none;
+}
+.quote-text {
+  font-family:'Noto Serif SC',serif;
+  font-size:16px; line-height:2;
+  color:var(--text2);
+  position:relative; z-index:1;
+}
+.quote-text em { color:var(--gold); font-style:normal; }
+
+.btn-share {
+  display:block;
+  width:calc(100% - 40px);
+  margin:14px 20px 0;
+  padding:14px;
+  background:transparent;
+  border:1px solid rgba(200,168,75,.25);
+  border-radius:50px;
+  color:var(--gold);
+  font-size:14px; font-weight:500;
+  font-family:'Noto Sans SC',sans-serif;
+  cursor:pointer; letter-spacing:.5px;
+  transition:background .2s;
+}
+.btn-share:active { background:rgba(200,168,75,.06); }
+
+/* unlock screen */
+#unlocked .a-block { animation: fadeUp .5s ease both; }
+#unlocked .a-block:nth-child(2) { animation-delay:.1s; }
+#unlocked .a-block:nth-child(3) { animation-delay:.2s; }
+</style>
+</head>
+<body>
+
+<!-- ══════ COVER ══════ -->
+<div id="cover" class="screen active">
+  <div class="cover-eyebrow">金钱心理学 · 深度测评</div>
+  <div class="cover-ornament">
+    <span></span><i>✦</i><span></span>
+  </div>
+  <h1 class="cover-title">
+    你被童年<em>金钱创伤</em>影响了多深？
+  </h1>
+  <p class="cover-sub">父母的金钱观，悄悄住进了你的大脑<br>这份测评帮你看见那些从没被说出口的影响</p>
+  <div class="cover-pills">
+    <div class="pill"><strong>28</strong> 道题目</div>
+    <div class="pill"><strong>6</strong> 个维度</div>
+    <div class="pill">约 <strong>5</strong> 分钟</div>
+    <div class="pill">AI 个性化报告</div>
+  </div>
+  <button class="btn-primary" onclick="go('quiz'); startQuiz()">开始测评 →</button>
+  <p class="cover-footnote">你的答案仅用于生成报告，不会被储存</p>
+</div>
+
+<!-- ══════ QUIZ ══════ -->
+<div id="quiz" class="screen">
+  <div class="quiz-top">
+    <div class="quiz-top-row">
+      <span class="chapter-badge" id="ch-label">第一章：童年留下了什么</span>
+      <span class="q-counter" id="q-counter">1 / 28</span>
+    </div>
+    <div class="prog-track">
+      <div class="prog-fill" id="prog" style="width:0%"></div>
+    </div>
+  </div>
+  <div id="q-area"></div>
+  <div class="quiz-bar">
+    <button class="btn-next" id="btn-next" onclick="nextQ()">下一题</button>
+  </div>
+</div>
+
+<!-- ══════ LOADING ══════ -->
+<div id="loading" class="screen">
+  <div class="spinner"></div>
+  <div class="loading-h">正在生成你的专属报告</div>
+  <p class="loading-p">AI 正在分析你的 28 个答案<br>请稍候片刻</p>
+  <div class="loading-steps">
+    <div class="step-row"><div class="step-dot"></div>正在分析六大维度得分…</div>
+    <div class="step-row"><div class="step-dot"></div>匹配你的金钱心理类型…</div>
+    <div class="step-row"><div class="step-dot"></div>生成个性化深度解读…</div>
+  </div>
+</div>
+
+<!-- ══════ RESULT ══════ -->
+<div id="result" class="screen">
+
+  <div class="r-hero">
+    <div class="r-eyebrow">你的专属金钱心理报告</div>
+    <div class="r-type">主要类型</div>
+    <div class="r-title">「被看见的代价：你用隐形保护自己，<br>却也把丰盛挡在了门外」</div>
+    <div class="ring-wrap">
+      <svg viewBox="0 0 120 120" width="128" height="128">
+        <circle class="ring-bg" cx="60" cy="60" r="54"/>
+        <circle class="ring-val" id="ring" cx="60" cy="60" r="54"/>
+      </svg>
+      <div class="ring-inner">
+        <span class="ring-num" id="ring-num">0</span>
+        <div class="ring-label">综合指数</div>
+      </div>
+    </div>
+    <p class="r-hero-desc">你学会了让钱和自己都不被看见，以此来避免受伤。但代价是你也把丰盛挡在了门外。</p>
+  </div>
+
+  <!-- 维度 -->
+  <div class="dims-section">
+    <div class="sec-head">六维画像</div>
+    <div class="dim-row">
+      <div class="dim-top"><span class="dim-name">家族传递</span><span class="dim-pct">83</span></div>
+      <div class="dim-track"><div class="dim-bar" data-w="83" style="background:var(--accent)"></div></div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-top"><span class="dim-name">自我价值绑架</span><span class="dim-pct">81</span></div>
+      <div class="dim-track"><div class="dim-bar" data-w="81" style="background:var(--purple)"></div></div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-top"><span class="dim-name">金钱羞耻感</span><span class="dim-pct">80</span></div>
+      <div class="dim-track"><div class="dim-bar" data-w="80" style="background:var(--gold)"></div></div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-top"><span class="dim-name">金钱回避</span><span class="dim-pct">67</span></div>
+      <div class="dim-track"><div class="dim-bar" data-w="67" style="background:var(--blue)"></div></div>
+    </div>
+    <div class="dim-row">
+      <div class="dim-top"><span class="dim-name">匮乏感与安全感</span><span class="dim-pct">50</span></div>
+      <div class="dim-track"><div class="dim-bar" data-w="50" style="background:var(--teal)"></div></div>
+    </div>
+  </div>
+
+  <!-- 免费解读 -->
+  <div class="analysis">
+    <div class="a-block">
+      <div class="a-tag">核心模式</div>
+      <div class="a-head">关于你和钱的真相</div>
+      <div class="a-body">
+        你在金钱这件事上的核心策略，是<strong>让自己不被看见</strong>——不让别人知道你有多少钱，不开口借钱，不谈钱，收入自动报低，哪怕是信任的朋友也不例外。你以为这是低调，但这背后有一个更深的逻辑：<em>如果我的真实财务状况被人看见，我会受伤。</em><br><br>
+        这个逻辑不是你自己发明的。它来自你的家庭。你的家庭对金钱有一种特殊的态度：钱是秘密，不能说，不该说，也最好别让外人知道。你从小就被教导"钱的事不跟外人讲"。
+      </div>
+    </div>
+
+    <div class="a-block">
+      <div class="a-tag">隐藏规律</div>
+      <div class="a-head">你可能没意识到的一件事</div>
+      <div class="a-body">
+        你家里对有钱人大概率有一种复杂的情绪。表面上是"有什么了不起"，但那句话背后藏着的，是<strong>强烈的渴望</strong>。孩子对这种情绪感知得非常准确，你当时也许没意识到，但你学到了：<br><br>
+        <em>对金钱，要渴望，但不能承认渴望；要在意，但不能表现得在意。</em><br><br>
+        这个矛盾，你现在还在活着它。你答了"觉得一个人有没有钱反映了他这个人行不行"，同时又"宁可自己扛也不开口借钱"——这两件事同时存在，说明你用别人的财富来评价别人，却拒绝让别人用同样的标准看见你。
+      </div>
+    </div>
+  </div>
+
+  <!-- 付费墙 -->
+  <div class="paywall-wrap">
+    <div class="pw-blur">
+      <div class="a-block">
+        <div class="a-tag">关系影响</div>
+        <div class="a-head">这如何影响你和身边人</div>
+        <div class="a-body">
+          在亲密关系中，你的金钱隐形模式会制造一种特殊的摩擦……对方感受到的是你的封闭，而不是你想传递的安全感……
+        </div>
+      </div>
+    </div>
+    <div class="pw-gate">
+      <div class="pw-icon">🔐</div>
+      <div class="pw-h">解锁完整深度报告</div>
+      <div class="pw-sub">你已经看到了冰山一角<br>完整报告揭示更深的影响</div>
+      <div class="pw-list">
+        <div class="pw-item">与伴侣最容易爆发的金钱摩擦场景</div>
+        <div class="pw-item">你可能正在传递给孩子的金钱信念</div>
+        <div class="pw-item">职场合作时最容易吃的三种暗亏</div>
+        <div class="pw-item">3个可以立刻开始的疗愈行动</div>
+      </div>
+      <button class="btn-pay" onclick="unlockReport()">解锁完整报告 · ¥9.9</button>
+      <p class="pw-note">一次付费，永久查看 · 微信支付</p>
+    </div>
+  </div>
+
+  <div class="quote-card" id="quote-card">
+    <div class="quote-text">
+      你不是因为贪婪才在意钱<br>
+      你只是太久没人告诉你<br>
+      <em>你可以心安理得地拥有它</em>
+    </div>
+  </div>
+  <button class="btn-share" onclick="shareIt()">截图分享给朋友 ↗</button>
+</div>
+
+<!-- ══════ UNLOCKED ══════ -->
+<div id="unlocked" class="screen">
+  <div class="r-hero" style="padding-top:36px">
+    <div class="r-eyebrow">完整深度报告 · 已解锁</div>
+    <div class="r-title" style="font-size:18px;margin-bottom:0">「被看见的代价」— 延伸解读</div>
+  </div>
+
+  <div class="analysis" id="unlocked">
+    <div class="a-block">
+      <div class="a-tag">关系影响</div>
+      <div class="a-head">和伴侣最容易爆发的摩擦</div>
+      <div class="a-body">
+        你的金钱隐形模式在亲密关系里会制造一种特殊的张力。你不愿意告诉伴侣你真实的财务状况，对方感受到的不是你以为的"低调"，而是<strong>一种被排斥在外的疏离感</strong>。<br><br>
+        最容易爆发摩擦的场景是：当需要共同做财务决策时（买房、投资、旅行预算），你会习惯性地先自己扛，或者给出一个保守的数字，让对方觉得"你在藏着什么"。长期下来，钱的话题在你们之间会变成一个<em>不能碰的雷区</em>。
+      </div>
+    </div>
+
+    <div class="a-block">
+      <div class="a-tag">代际传递</div>
+      <div class="a-head">你可能正在传递给孩子的</div>
+      <div class="a-body">
+        你从父母那里继承了"钱是秘密"的信念。如果你现在有孩子，或者未来会有，<strong>这个模式极有可能以同样的方式传下去</strong>。<br><br>
+        具体表现可能是：当孩子问"我们家有没有钱"时，你会回避或给出模糊的答案；当孩子表达对某件东西的渴望时，你可能会用"不需要"来代替真实的"现在买不起"或"我们可以计划一下"——孩子听到的，是自己的欲望不对，而不是现实的边界。
+      </div>
+    </div>
+
+    <div class="a-block">
+      <div class="a-tag">职场风险</div>
+      <div class="a-head">合作时容易吃的三种暗亏</div>
+      <div class="a-body">
+        <strong>第一，谈薪时自动报低。</strong>你习惯于让自己的财务价值不被充分看见，在薪资谈判时会倾向于"差不多就行"，甚至在对方还没有压价时就已经替对方退让了。<br><br>
+        <strong>第二，不好意思追款。</strong>合作中对方欠款或者拖延付款，你明明知道但会一拖再拖，因为"开口要钱"触发了你的羞耻感。<br><br>
+        <strong>第三，用请客掩盖不安全感。</strong>你答了"会通过请客让别人觉得过得不错"——这种行为在职场里会让你付出真实的经济成本，却未必换来对等的职场资本。
+      </div>
+    </div>
+
+    <div class="a-block">
+      <div class="a-tag">疗愈行动</div>
+      <div class="a-head">三件可以立刻开始做的小事</div>
+      <div class="a-body">
+        <strong>· 练习说出一个真实的数字：</strong>下次有人问你收入，试着给一个比你习惯说的高10%的数字。不是撒谎，是停止自动报低。注意那一刻的感受——那个不舒服，就是羞耻感的位置。<br><br>
+        <strong>· 找一件事允许别人帮你：</strong>不是大事，就是一件小事。注意你抗拒的那个瞬间——你在保护什么？<br><br>
+        <strong>· 对孩子或重要的人说一次真实的数字：</strong>"我们家现在大概有多少钱"——不是炫耀，是打破"钱是秘密"这个代代相传的魔咒。说出来的那一刻，你就已经开始疗愈了。
+      </div>
+    </div>
+  </div>
+
+  <div class="quote-card">
+    <div class="quote-text">
+      你不是因为贪婪才在意钱<br>
+      你只是太久没人告诉你<br>
+      <em>你可以心安理得地拥有它</em>
+    </div>
+  </div>
+  <button class="btn-share" onclick="shareIt()" style="margin-bottom:20px">截图分享给朋友 ↗</button>
+</div>
+
+<script>
+// ─── DATA ───
+const QS = [
+  {ch:'第一章：童年留下了什么', q:'小时候，"我们家没钱"这句话你是不是听了很多次？'},
+  {q:'你曾经想要某个东西，最后跟自己说"算了，不重要的"——但其实挺重要的？'},
+  {q:'开口管父母要钱，你会有一种说不清的不舒服？'},
+  {q:'你有没有偷偷藏过压岁钱，不让父母知道？'},
+  {q:'你的父母经常担心"要是有一天没钱了怎么办"——哪怕家里其实还好？'},
+  {ch:'第二章：家族传给你了什么', q:'家里有亲戚或邻居比你家有钱，父母会私下说"有什么了不起"？'},
+  {q:'父母对"有钱人"是一种又羡慕又看不上的态度？'},
+  {q:'家里把钱当成秘密，不告诉你家里到底有多少钱？'},
+  {q:'父母教过你"钱不能随便跟外人说"？'},
+  {ch:'第三章：钱和你现在的感受', q:'银行卡有余额，你还是会隐隐觉得不够安全？'},
+  {q:'每次发工资，你最先想到的是松了口气，而不是"这个月可以做什么"？'},
+  {q:'你存钱的动力，与其说是"想实现什么"，不如说是"怕某天没钱"？'},
+  {q:'有人好意要帮你或请你，你第一反应是"他想干什么"？'},
+  {ch:'第四章：你怎么跟钱相处', q:'你会主动不去看账单或余额，因为看了更焦虑？'},
+  {q:'该处理的财务事（还款、报税、记账）能拖就拖？'},
+  {q:'谈到钱的话题，你会感到不舒服并想转移话题？'},
+  {q:'花了一笔钱之后，会反复回放"这钱花得值不值"？'},
+  {ch:'第五章：钱和你的自我感觉', q:'刷到晒豪车豪宅的帖子，会觉得自己差人家一截？'},
+  {q:'朋友聚餐你会主动抢着买单，但回家又心疼那笔钱？'},
+  {q:'你觉得只要有足够的钱，现在烦恼的事大部分都能解决？'},
+  {q:'财务状况不好的时候，你会觉得整个人都很失败？'},
+  {ch:'第六章：钱和你的面子', q:'你对朋友或同学的收入，有一种"他们肯定比我多"的默认感？'},
+  {q:'你会通过请客或买某些东西，让别人觉得你过得不错？'},
+  {q:'你觉得一个人有没有钱，多少反映了他这个人行不行？'},
+  {ch:'第七章：钱和你身边的人', q:'你基本不会开口向别人借钱，宁可自己扛？'},
+  {q:'谈到自己的收入或存款，你会自动报低或含糊过去？'},
+  {q:'你觉得"谈钱伤感情"，钱的事能不说就不说？'},
+  {q:'哪怕是信任的朋友，你也不愿意让他们知道你真实的财务状况？'},
+];
+
+const OPTS = ['从没有这样','偶尔会这样','经常这样','说的就是我'];
+
+let cur = 0;
+let ans = new Array(28).fill(null);
+
+// ─── NAV ───
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.animation = '';
+  });
+  const el = document.getElementById(id);
+  el.style.animation = 'none';
+  el.offsetHeight;
+  el.style.animation = '';
+  el.classList.add('active');
+  window.scrollTo(0,0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+}
+
+// ─── QUIZ ───
+function startQuiz() {
+  cur = 0; ans = new Array(28).fill(null);
+  renderQ(0);
+}
+
+function renderQ(i) {
+  const d = QS[i];
+  let html = '';
+  if (d.ch) {
+    html += `<div class="ch-marker">
+      <span class="ch-marker-text">${d.ch}</span>
+      <div class="ch-marker-line"></div>
+    </div>`;
+  }
+  html += `<div class="q-wrap">
+    <div class="q-num">Q${i+1} · 28</div>
+    <div class="q-text">${d.q}</div>
+    <div class="opts">`;
+  OPTS.forEach((o,j) => {
+    html += `<div class="opt${ans[i]===j?' sel':''}" onclick="pick(${j})">
+      <div class="opt-radio"></div>
+      <span class="opt-label">${o}</span>
+    </div>`;
+  });
+  html += `</div></div>`;
+
+  document.getElementById('q-area').innerHTML = html;
+  document.getElementById('q-counter').textContent = `${i+1} / 28`;
+  document.getElementById('prog').style.width = (i/28*100)+'%';
+
+  // chapter label
+  for(let k=i; k>=0; k--) {
+    if(QS[k].ch){ document.getElementById('ch-label').textContent = QS[k].ch; break; }
+  }
+
+  const btn = document.getElementById('btn-next');
+  const last = i === 27;
+  btn.textContent = last ? '查看我的报告 ✦' : '下一题';
+  btn.classList.toggle('on', ans[i] !== null);
+}
+
+function pick(j) {
+  ans[cur] = j;
+  document.querySelectorAll('.opt').forEach((el,k) => el.classList.toggle('sel', k===j));
+  document.getElementById('btn-next').classList.add('on');
+}
+
+function nextQ() {
+  if (ans[cur] === null) return;
+  if (cur < 27) {
+    cur++; renderQ(cur);
+    window.scrollTo(0,0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  } else { go('loading'); generateAIReport(); }
+}
+
+async function generateAIReport() {
+  const scores = calcScores();
+  const type = getType(scores);
+  const answerSummary = ans.map((a,i) => `Q${i+1}: ${OPTS[a]}(${a}分)`).join('\n');
+  const dimSummary = Object.entries(scores)
+    .filter(([k]) => k !== '_total')
+    .map(([k,v]) => `${k}: ${v.pct}分`).join('，');
+
+  const prompt = `你是一位金钱心理学专家，语言温柔但直击内心，擅长让人在被看见中获得疗愈。
+
+用户完成了28题金钱心理测评，结果如下：
+综合创伤指数：${scores._total}分
+各维度得分：${dimSummary}
+主要类型：${type.name}
+最高维度：${type.topDim}
+
+用户答题详情：
+${answerSummary}
+
+请生成深度解读报告，严格按格式输出，用===分隔：
+
+===主标题===
+一句有穿透力的总结语，不超过20字，用「」包裹，概括这个人的核心金钱心理模式
+
+===主要洞察===
+200字，描述核心金钱心理模式。语气像懂你的朋友，不像心理报告。结合最高分维度重点分析。
+
+===你可能不知道的===
+150字，说一个用户可能从没意识到的隐藏模式，要有"惊到你了吗"的效果。从答题数据找真实规律。
+
+===和身边人的关系===
+150字，这种金钱模式如何影响他和伴侣、朋友或同事的关系。具体，有场景感。
+
+===三件可以开始做的小事===
+每件事一行，格式："· [动作]：[为什么]"，简洁可操作。
+
+===专属金句===
+一句话，20字以内，温柔有力量，适合截图分享。不要用"你值得"这类说法。`;
+
+  try {
+    const resp = await fetch('/api/report', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    const data = await resp.json();
+    const aiText = data.text || '';
+    renderResult(calcScores(), getType(calcScores()), aiText);
+  } catch(e) {
+    renderResult(calcScores(), getType(calcScores()), '');
+  }
+}
+
+// 计算维度分数
+const DIMENSION_MAP = {
+  '匮乏感与安全感': { qs:[0,1,4,9,10,11], max:18 },
+  '家族传递':       { qs:[5,6,7,8], max:12 },
+  '金钱羞耻感':     { qs:[2,3,24,25,27], max:15 },
+  '金钱回避':       { qs:[12,13,14,15,16,26], max:18 },
+  '自我价值绑架':   { qs:[17,18,19,20,21,22,23], max:21 }
+};
+
+const DIM_COLORS_MAP = {
+  '匮乏感与安全感': 'var(--teal)',
+  '家族传递':       'var(--accent)',
+  '金钱羞耻感':     'var(--gold)',
+  '金钱回避':       'var(--blue)',
+  '自我价值绑架':   'var(--purple)'
+};
+
+function calcScores() {
+  const scores = {};
+  for (const [dim, info] of Object.entries(DIMENSION_MAP)) {
+    const raw = info.qs.reduce((s, qi) => s + (ans[qi] ?? 0), 0);
+    scores[dim] = { raw, max: info.max, pct: Math.round((raw / info.max) * 100) };
+  }
+  const totalRaw = Object.values(scores).reduce((s,d) => s + d.raw, 0);
+  const totalMax = Object.values(scores).reduce((s,d) => s + d.max, 0);
+  scores._total = Math.round((totalRaw / totalMax) * 100);
+  return scores;
+}
+
+function getType(scores) {
+  const top = Object.entries(scores)
+    .filter(([k]) => k !== '_total')
+    .sort((a,b) => b[1].pct - a[1].pct)[0][0];
+  const types = {
+    '匮乏感与安全感': { name:'安全感饥渴者', desc:'你的财务决策长期被恐惧驱动，而非目标驱动。有钱了也不一定安心。' },
+    '家族传递':       { name:'金钱基因继承者', desc:'你把父母对钱的态度几乎原封不动地继承了下来，包括他们的焦虑和矛盾。' },
+    '金钱羞耻感':     { name:'金钱隐形人', desc:'你学会了让钱和自己都不被看见，以此来避免受伤。但代价是你也把丰盛挡在了门外。' },
+    '金钱回避':       { name:'鸵鸟型财务人', desc:'回避是你对抗金钱焦虑的保护机制。眼不见心不烦，但失控感在悄悄累积。' },
+    '自我价值绑架':   { name:'价值证明者', desc:'你在用财富换取一种本该从内部生长出来的自我价值感。账户余额成了你的自信来源。' }
+  };
+  return { ...types[top], topDim: top };
+}
+
+function parseReport(text) {
+  const sections = {};
+  const parts = text.split(/===(.+?)===/);
+  for (let i = 1; i < parts.length; i += 2) {
+    sections[parts[i].trim()] = parts[i+1]?.trim() || '';
+  }
+  return sections;
+}
+
+function renderResult(scores, type, aiText) {
+  const parsed = parseReport(aiText);
+  const total = scores._total;
+  const circ = 2 * Math.PI * 54;
+
+  // 维度条
+  let dimBars = '';
+  for (const [dim, val] of Object.entries(scores)) {
+    if (dim === '_total') continue;
+    const color = DIM_COLORS_MAP[dim] || 'var(--gold)';
+    dimBars += `<div class="dim-row">
+      <div class="dim-top"><span class="dim-name">${dim}</span><span class="dim-pct">${val.pct}</span></div>
+      <div class="dim-track"><div class="dim-bar" data-w="${val.pct}" style="background:${color}"></div></div>
+    </div>`;
+  }
+
+  const mainTitle = parsed['主标题'] || `「${type.name}」`;
+  const mainInsight = parsed['主要洞察'] || type.desc;
+  const hidden = parsed['你可能不知道的'] || '';
+  const relations = parsed['和身边人的关系'] || '';
+  const actions = parsed['三件可以开始做的小事'] || '';
+  const quote = parsed['专属金句'] || '你不是因为贪婪才在意钱，你只是需要有人告诉你可以心安理得地拥有它。';
+
+  const actionHtml = actions.split('\n').filter(l=>l.trim())
+    .map(l=>`<div style="padding:10px 0;border-bottom:1px solid var(--br);font-size:14px;color:var(--text2);line-height:1.8;font-weight:300;">${l}</div>`).join('');
+
+  document.getElementById('result').innerHTML = `
+    <div class="r-hero">
+      <div class="r-eyebrow">你的专属金钱心理报告</div>
+      <div class="r-type">主要类型</div>
+      <div class="r-title">${mainTitle}</div>
+      <div class="ring-wrap">
+        <svg viewBox="0 0 120 120" width="128" height="128">
+          <circle class="ring-bg" cx="60" cy="60" r="54"/>
+          <circle class="ring-val" id="ring" cx="60" cy="60" r="54"
+            style="stroke-dasharray:${circ};stroke-dashoffset:${circ}"/>
+        </svg>
+        <div class="ring-inner">
+          <span class="ring-num" id="ring-num">0</span>
+          <div class="ring-label">综合指数</div>
+        </div>
+      </div>
+      <p class="r-hero-desc">${type.desc}</p>
+    </div>
+
+    <div class="dims-section">
+      <div class="sec-head">六维画像</div>
+      ${dimBars}
+    </div>
+
+    <div class="analysis">
+      <div class="a-block">
+        <div class="a-tag">核心模式</div>
+        <div class="a-head">关于你和钱的真相</div>
+        <div class="a-body">${mainInsight.replace(/\n/g,'<br>')}</div>
+      </div>
+      ${hidden ? `<div class="a-block">
+        <div class="a-tag">隐藏规律</div>
+        <div class="a-head">你可能没意识到的一件事</div>
+        <div class="a-body">${hidden.replace(/\n/g,'<br>')}</div>
+      </div>` : ''}
+    </div>
+
+    <div class="paywall-wrap">
+      <div class="pw-blur">
+        <div class="a-block" style="padding:20px">
+          <div class="a-tag">关系影响</div>
+          <div class="a-head">这如何影响你和身边人</div>
+          <div class="a-body">${(relations||'这种金钱模式在亲密关系中会以特定方式显现…').replace(/\n/g,'<br>')}</div>
+        </div>
+      </div>
+      <div class="pw-gate">
+        <div class="pw-icon">🔐</div>
+        <div class="pw-h">解锁完整深度报告</div>
+        <div class="pw-sub">你已经看到了冰山一角<br>完整报告揭示更深的影响</div>
+        <div class="pw-list">
+          <div class="pw-item">与伴侣最容易爆发的金钱摩擦场景</div>
+          <div class="pw-item">你可能正在传递给孩子的金钱信念</div>
+          <div class="pw-item">职场合作时最容易吃的三种暗亏</div>
+          <div class="pw-item">3个可以立刻开始的疗愈行动</div>
+        </div>
+        <button class="btn-pay" onclick="unlockReport('${encodeURIComponent(relations)}','${encodeURIComponent(actions)}','${encodeURIComponent(quote)}')">解锁完整报告 · ¥9.9</button>
+        <p class="pw-note">一次付费，永久查看 · 微信支付</p>
+      </div>
+    </div>
+
+    <div class="quote-card">
+      <div class="quote-text">${quote.replace(/\n/g,'<br>')}</div>
+    </div>
+    <button class="btn-share" onclick="shareIt()">截图分享给朋友 ↗</button>
+  `;
+
+  go('result');
+
+  setTimeout(() => {
+    const ringEl = document.getElementById('ring');
+    if (ringEl) ringEl.style.strokeDashoffset = circ - (total/100)*circ;
+    let n=0;
+    const numEl = document.getElementById('ring-num');
+    const t = setInterval(()=>{ n=Math.min(n+2,total); if(numEl) numEl.textContent=n; if(n>=total) clearInterval(t); }, 28);
+    document.querySelectorAll('.dim-bar').forEach(el => {
+      setTimeout(()=>{ el.style.width = el.dataset.w+'%'; }, 200);
+    });
+  }, 100);
+}
+
+function unlockReport(relations, actions, quote) {
+  alert('支付功能即将开放，请关注公众号获取最新消息');
+}
+
+// result由AI版本渲染
+
+function unlockReport() {
+  go('unlocked');
+  window.scrollTo({top:0});
+}
+
+function shareIt() {
+  if(navigator.share) {
+    navigator.share({
+      title:'我的金钱心理测评结果',
+      text:'测测你被童年金钱创伤影响了多深？',
+      url: window.location.href
+    });
+  } else {
+    alert('长按截图保存，分享给朋友 ✦');
+  }
+}
+</script>
+</body>
+</html>
