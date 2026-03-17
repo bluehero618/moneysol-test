@@ -202,12 +202,15 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div class="loading-inner">
     <div class="spinner"></div>
     <div class="loading-h">正在生成你的专属报告</div>
-    <p class="loading-p">AI 正在分析你的 28 个答案<br>请稍候约 15 秒</p>
+    <p class="loading-p">AI 正在认真阅读你的每一个答案<br>这份报告只属于你，需要约 20 秒</p>
     <div class="loading-steps">
-      <div class="step-row"><div class="step-dot"></div>正在分析六大维度得分…</div>
-      <div class="step-row"><div class="step-dot"></div>匹配你的金钱心理类型…</div>
-      <div class="step-row"><div class="step-dot"></div>生成个性化深度解读…</div>
+      <div class="step-row"><div class="step-dot"></div>分析你的六大维度得分…</div>
+      <div class="step-row"><div class="step-dot"></div>识别你独特的金钱心理模式…</div>
+      <div class="step-row"><div class="step-dot"></div>撰写你的个性化深度解读…</div>
     </div>
+    <p id="loading-tip" style="margin-top:32px;font-size:12px;color:var(--text3);max-width:240px;line-height:1.8;opacity:0;animation:fadeUp 1s ease 4s both;">
+      深度报告需要更多思考时间<br>就像真正的理解，急不得
+    </p>
   </div>
 </div>
 
@@ -279,7 +282,7 @@ const TYPES={
 };
 
 let cur=0, ans=new Array(28).fill(null);
-let savedRelations='', savedActions='', savedQuote='';
+let savedRelations='', savedActions='', savedQuote='', savedHidden='';
 
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -411,9 +414,7 @@ function renderResult(scores,type,aiText){
   const actions=p['疗愈行动']||'';
   const quote=p['专属金句']||'每一次看见自己，都是疗愈的开始。';
 
-  savedRelations=relations; savedActions=actions; savedQuote=quote;
-
-  // 隐藏规律只显示第一句
+  savedRelations=relations; savedActions=actions; savedQuote=quote; savedHidden=hidden;
   const hiddenSentences = hidden.split(/[。！？\n]/).filter(s=>s.trim());
   const hiddenFirst = hiddenSentences[0] ? hiddenSentences[0]+'。' : '';
 
@@ -495,21 +496,129 @@ function renderResult(scores,type,aiText){
   },150);
 }
 
+// 兑换码列表（可以随时在这里添加新的码）
+const VALID_CODES = new Set([
+  'MONEY001','MONEY002','MONEY003','MONEY004','MONEY005',
+  'MONEY006','MONEY007','MONEY008','MONEY009','MONEY010',
+  'SOUL001','SOUL002','SOUL003','SOUL004','SOUL005',
+]);
+const USED_CODES_KEY = 'used_codes_v1';
+
+function getUsedCodes(){
+  try{ return new Set(JSON.parse(sessionStorage.getItem(USED_CODES_KEY)||'[]')); }
+  catch(e){ return new Set(); }
+}
+
+function markCodeUsed(code){
+  const used = getUsedCodes();
+  used.add(code);
+  sessionStorage.setItem(USED_CODES_KEY, JSON.stringify([...used]));
+}
+
 function unlockReport(){
-  const scores=calcScores(); const type=getType(scores);
-  document.getElementById('unlocked-title').textContent=`「${type.name}」— 延伸解读`;
-  const actionHtml=savedActions.split('\n').filter(l=>l.trim())
-    .map(l=>`<p style="padding:10px 0;border-bottom:1px solid var(--br);font-size:clamp(13px,2.5vw,15px);color:var(--text2);line-height:1.8;font-weight:300;">${l}</p>`).join('');
+  // 弹出兑换码输入框
+  const overlay = document.createElement('div');
+  overlay.id = 'code-overlay';
+  overlay.style.cssText = `
+    position:fixed;inset:0;background:rgba(0,0,0,0.85);
+    display:flex;align-items:center;justify-content:center;
+    z-index:10000;padding:20px;
+  `;
+  overlay.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--br2);border-radius:20px;
+      padding:clamp(24px,5vw,40px);width:100%;max-width:360px;text-align:center;">
+      <div style="font-size:28px;margin-bottom:16px;">🔐</div>
+      <div style="font-family:'Noto Serif SC',serif;font-size:clamp(17px,4vw,21px);
+        font-weight:700;margin-bottom:8px;">输入兑换码</div>
+      <div style="font-size:clamp(12px,2.5vw,14px);color:var(--text2);
+        line-height:1.7;margin-bottom:24px;font-weight:300;">
+        在小红书下单后<br>我会私信发送你的专属兑换码
+      </div>
+      <input id="code-input" type="text" placeholder="请输入兑换码"
+        style="width:100%;background:var(--bg3);border:1px solid var(--br2);
+        border-radius:10px;padding:14px 16px;font-size:16px;color:var(--text);
+        font-family:'Noto Sans SC',sans-serif;text-align:center;
+        letter-spacing:3px;text-transform:uppercase;outline:none;margin-bottom:12px;"
+        oninput="this.value=this.value.toUpperCase()"
+      />
+      <div id="code-err" style="font-size:12px;color:#c97a5a;margin-bottom:12px;min-height:18px;"></div>
+      <button onclick="submitCode()" style="
+        width:100%;background:linear-gradient(135deg,#b8942e 0%,var(--gold-lt) 50%,#b8942e 100%);
+        color:#140f00;border:none;padding:15px;border-radius:50px;
+        font-size:16px;font-weight:700;font-family:'Noto Sans SC',sans-serif;
+        cursor:pointer;letter-spacing:1px;margin-bottom:12px;">
+        立即解锁
+      </button>
+      <button onclick="document.getElementById('code-overlay').remove()" style="
+        background:transparent;border:none;color:var(--text3);
+        font-size:13px;cursor:pointer;font-family:'Noto Sans SC',sans-serif;">
+        暂不解锁
+      </button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  setTimeout(()=>document.getElementById('code-input')?.focus(), 100);
+}
+
+function submitCode(){
+  const input = document.getElementById('code-input');
+  const errEl = document.getElementById('code-err');
+  const code = input.value.trim().toUpperCase();
+
+  if(!code){ errEl.textContent='请输入兑换码'; return; }
+
+  const used = getUsedCodes();
+  if(used.has(code)){ errEl.textContent='该兑换码已被使用过'; return; }
+
+  if(!VALID_CODES.has(code)){ errEl.textContent='兑换码无效，请检查后重试'; return; }
+
+  // 验证通过
+  markCodeUsed(code);
+  document.getElementById('code-overlay').remove();
+  showUnlockedContent();
+}
+
+function showUnlockedContent(){
+  const scores=calcScores();
+  const type=getType(scores);
+
+  document.getElementById('unlocked-title').textContent=`「${type.name}」— 完整解读`;
+
+  // 渲染隐藏规律完整版（从savedHidden获取）
+  const hiddenFull = savedHidden || '';
+  // 疗愈行动完整版
+  const actionHtml = savedActions.split('\n').filter(l=>l.trim())
+    .map(l=>`<div style="padding:12px 0;border-bottom:1px solid var(--br);
+      font-size:clamp(13px,2.5vw,15px);color:var(--text2);
+      line-height:1.85;font-weight:300;">${l}</div>`).join('');
+
   document.getElementById('unlocked-body').innerHTML=`
-    <div class="a-block"><div class="a-tag">关系影响</div><div class="a-head">和身边人的金钱模式</div><div class="a-body">${savedRelations.replace(/\n/g,'<br>')||'暂无'}</div></div>
-    <div class="a-block"><div class="a-tag">疗愈行动</div><div class="a-head">三件可以立刻开始的小事</div><div class="a-body">${actionHtml||'暂无'}</div></div>`;
-  document.getElementById('unlocked-quote').innerHTML=`<div class="quote-text">${savedQuote.replace(/\n/g,'<br>')}</div>`;
+    ${hiddenFull ? `<div class="a-block">
+      <div class="a-tag">隐藏规律 · 完整版</div>
+      <div class="a-head">你可能没意识到的一件事</div>
+      <div class="a-body">${hiddenFull.replace(/\n/g,'<br>')}</div>
+    </div>` : ''}
+    <div class="a-block">
+      <div class="a-tag">关系影响</div>
+      <div class="a-head">和身边人的金钱模式</div>
+      <div class="a-body">${(savedRelations||'').replace(/\n/g,'<br>')||'暂无内容'}</div>
+    </div>
+    <div class="a-block">
+      <div class="a-tag">疗愈行动</div>
+      <div class="a-head">三件可以立刻开始的小事</div>
+      <div class="a-body">${actionHtml||'暂无内容'}</div>
+    </div>
+  `;
+
+  const q = savedQuote || '每一次看见自己，都是疗愈的开始。';
+  document.getElementById('unlocked-quote').innerHTML=
+    `<div class="quote-text">${q.replace(/\n/g,'<br>')}</div>`;
+
   showPage('p-unlocked');
 }
 
 function shareIt(){
-  if(navigator.share){navigator.share({title:'我的金钱心理测评结果',text:'测测你被童年金钱创伤影响了多深？',url:window.location.href});}
-  else{alert('长按截图保存，分享给朋友 ✦');}
+  alert('请长按屏幕截图，保存后分享给朋友 ✦\n\n让更多人来测测自己的金钱心理');
 }
 </script>
 </body>
