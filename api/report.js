@@ -17,13 +17,13 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${process.env.SILICONFLOW_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'deepseek-ai/DeepSeek-V3',
-        max_tokens: 8000,
+        model: 'Qwen/Qwen2.5-72B-Instruct',
+        max_tokens: 6000,
         temperature: 0.75,
         messages: [
           {
             role: 'system',
-            content: '你是一位金钱心理学专家。你的报告有三层穿透力：第一层描述表象行为，第二层揭示行为背后用户自己的核心策略，第三层指出用户从未意识到的深层恐惧和无意识习得的东西。严格按用户要求的格式输出，不截断，不添加格式外的文字。'
+            content: '你是一位金钱心理学专家。报告要有三层穿透力：第一层描述表象行为，第二层揭示用户自己的核心策略，第三层指出用户从未意识到的深层恐惧和无意识习得。严格按格式输出，不截断，不在===标记外添加任何文字。'
           },
           {
             role: 'user',
