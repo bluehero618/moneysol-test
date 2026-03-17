@@ -352,9 +352,9 @@ async function generateReport(){
   const highScores=ans.map((a,i)=>a>=2?`Q${i+1}得${a}分(${QS[i].q.slice(0,18)})`:'').filter(Boolean).join('；');
   const allAnswers=ans.map((a,i)=>`Q${i+1}=${a}`).join(',');
 
-  const prompt=`你是一位有20年经验的金钱心理学专家，文字风格像李松蔚的心理科普——温柔、精准、有穿透力，让人读完觉得"被看见了"。
+  const prompt=`你是一位有20年经验的金钱心理学专家，文字风格温柔、精准、有穿透力，让人读完觉得"被看见了"。
 
-用户28题测评完整数据：
+用户28题测评数据：
 综合创伤指数：${scores._total}分（满分100）
 各维度百分制：${dimSummary}
 最突出维度：${type.topDim}（${scores[type.topDim]?.pct}分）
@@ -362,36 +362,44 @@ async function generateReport(){
 高分题目（2-3分）：${highScores}
 全部答案（0=从不,1=偶尔,2=经常,3=总是）：${allAnswers}
 
-核心要求：每一段必须引用用户的具体答题，让用户觉得"这在说我"而不是通用模板。
+核心要求：每一段必须引用用户具体答题，让用户觉得"这在说我"。语气像真正懂你的朋友，不说教，不用"你应该""你需要"这类词。
 
-严格按以下格式输出，用===分隔，===之间的内容完整输出，不要截断：
+严格按以下格式输出，===之间内容完整输出不截断：
 
 ===主标题===
 12-18字，「」包裹，点出该用户最核心的金钱心理困境，必须是这个用户独有的
 
+===综合解读===
+一句话，格式固定：综合创伤指数：${scores._total}分，满分100分，你超过了约XX%的测试者（根据分数估算：90+→98%，80-89→92%，70-79→85%，60-69→75%，50-59→60%，40-49→45%，以此类推）
+
+===你是哪种人===
+第一行：「人格命名」，4-6个字，有画面感，如「隐形富人格」「金钱守门人」
+第二行：一句话20字以内解释这个命名，口语化，有点戳人
+
 ===主要洞察===
-250字左右。三个层次自然流动：1)用户最突出的外显行为（引用具体高分题目）2)这个行为背后的内在逻辑 3)用户"自己说不清但感觉对"的深层感受。语气像一个懂你的朋友，不说教。
+200-250字。三层自然流动：1)最突出外显行为（引用具体高分题，直接描述行为画面）2)行为背后的内在逻辑 3)那个用户"自己说不清但感觉对"的深层感受。最后一句要有重量，让人停顿。
 
 ===隐藏规律===
-200字左右。找出答题数据中一个反直觉的发现——某维度意外低/两个矛盾高分并存/某个行为与直觉相反。必须有具体题目数据支撑，让用户说"对，我从没想过这个角度"。
+150-200字。找出答题中一个反直觉发现，必须基于真实数据，让用户说"对，我从没这么想过"。
 
 ===维度解读===
-对得分最高的三个维度分别做深度解读，每个维度之间用单独一行"---"分隔。
-每个维度的格式：
-第一行写维度名称和得分，如：家族传递（83分）：金钱的秘密，被你藏得多深
-之后150字左右，深入解读这个维度对该用户意味着什么，引用该维度下的具体高分题目，描述具体行为场景。
+对得分最高的三个维度分别深度解读，每个之间用单独一行"---"分隔。
+每个格式：
+第一行：维度名（XX分）：「8-12字点睛副标题」
+然后150字左右，引用该维度具体高分题，描述行为场景，分析深层原因，语言有画面感和温度。
 
 ===关系影响===
-250字左右，三个具体场景：
-1)【与伴侣】具体描述这种金钱模式如何在亲密关系中制造摩擦，有画面感的场景
-2)【与孩子/未来】如果有孩子，这种模式可能如何传递；或者在亲密关系里的未来风险
-3)【在职场】具体描述如何影响职业发展和合作关系，比如谈薪、追款、表现自我价值等
+200-250字，三个场景，每个场景前加标注：
+1)【与伴侣】有具体画面的场景，引用相关答题行为
+2)【与孩子/未来】这种模式如何可能传递，或在亲密关系未来造成什么
+3)【在职场】谈薪、追款、自我展示等具体职场行为，引用相关答题
 
 ===疗愈行动===
-三条行动，每条80-100字。格式：· [行动名称]：[具体做什么] [为什么有效] [预期变化]。必须针对该用户最高分维度量身定制，不能是通用建议。
+三条，每条格式：· [创意行动名称]：具体做什么（一句）。为什么有效（一句）。预期变化（一句）。
+行动名称要有创意，如「金钱坦白局」「反自动化报数」「家训考古」。必须针对用户最高分维度定制。
 
 ===专属金句===
-18-25字，有意境，像一句会被截图收藏的话。根据用户核心模式定制，禁用"你值得""你配""疗愈""丰盛"等滥用词。`;
+18-25字，有意境，像会被截图收藏的话。根据用户核心模式定制，禁用"你值得""你配""疗愈""丰盛"等滥用词。`;
 
   try{
     const r=await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
@@ -421,18 +429,19 @@ function renderResult(scores,type,aiText){
   const circ=339.3;
   const offset=circ-(total/100)*circ;
 
-  const title    = p['主标题']    || `「${type.name}」`;
-  const insight  = p['主要洞察']  || type.desc;
-  const hidden   = p['隐藏规律']  || '';
-  const relations= p['关系影响']  || '';
-  const actions  = p['疗愈行动']  || '';
-  const quote    = p['专属金句']  || '每一次看见自己，都是疗愈的开始。';
-  const dimDetails = p['维度解读'] || '';
+  const title      = p['主标题']    || `「${type.name}」`;
+  const totalDesc  = p['综合解读']  || `综合创伤指数：${total}分，满分100分`;
+  const whoAmI     = p['你是哪种人']|| '';
+  const insight    = p['主要洞察']  || type.desc;
+  const hidden     = p['隐藏规律']  || '';
+  const relations  = p['关系影响']  || '';
+  const actions    = p['疗愈行动']  || '';
+  const quote      = p['专属金句']  || '每一次看见自己，都是疗愈的开始。';
+  const dimDetails = p['维度解读']  || '';
 
   savedRelations=relations; savedActions=actions;
   savedQuote=quote; savedHidden=hidden; savedInsight=insight;
 
-  // 六维条形图
   let dimHtml='';
   for(const[dim,val]of Object.entries(scores)){
     if(dim==='_total') continue;
@@ -442,90 +451,56 @@ function renderResult(scores,type,aiText){
     </div>`;
   }
 
-  // 疗愈行动格式化
+  const whoLines = whoAmI.split('\n').filter(l=>l.trim());
+  const whoName = whoLines[0] || `「${type.name}」`;
+  const whoDesc = whoLines[1] || type.desc;
+
   const actionHtml = actions.split('\n').filter(l=>l.trim())
-    .map(l=>`<div style="padding:14px 0;border-bottom:1px solid var(--br);
-      font-size:clamp(13px,2.5vw,15px);color:var(--text2);line-height:1.9;font-weight:300;">${l}</div>`)
+    .map(l=>`<div style="padding:14px 0;border-bottom:1px solid var(--br);font-size:clamp(13px,2.5vw,15px);color:var(--text2);line-height:1.9;font-weight:300;">${l}</div>`)
     .join('');
 
-  // 维度解读格式化（按---分段）
   const dimBlocks = dimDetails ? dimDetails.split(/\n---\n/).filter(b=>b.trim()).map(block=>{
     const lines = block.trim().split('\n');
     const head = lines[0]||'';
     const body = lines.slice(1).join('\n').trim();
-    return `<div class="a-block">
-      <div class="a-tag">维度解读</div>
-      <div class="a-head">${head}</div>
-      <div class="a-body">${body.replace(/\n/g,'<br>')}</div>
-    </div>`;
+    return `<div class="a-block"><div class="a-tag">维度解读</div><div class="a-head">${head}</div><div class="a-body">${body.replace(/\n/g,'<br>')}</div></div>`;
   }).join('') : '';
 
   document.getElementById('result-content').innerHTML=`
     <div class="r-hero">
       <div class="r-eyebrow">你的专属金钱心理报告</div>
-      <div class="r-type">主要类型：${type.name}</div>
       <div class="r-title">${title}</div>
       <div class="ring-wrap">
-        <svg viewBox="0 0 120 120">
-          <circle class="ring-bg" cx="60" cy="60" r="54"/>
-          <circle class="ring-val" id="ring-c" cx="60" cy="60" r="54"/>
-        </svg>
-        <div class="ring-inner">
-          <span class="ring-num" id="ring-n">0</span>
-          <div class="ring-label">综合指数</div>
-        </div>
+        <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="54"/><circle class="ring-val" id="ring-c" cx="60" cy="60" r="54"/></svg>
+        <div class="ring-inner"><span class="ring-num" id="ring-n">0</span><div class="ring-label">综合指数</div></div>
       </div>
-      <p class="r-hero-desc">${type.desc}</p>
+      <p class="r-hero-desc" style="font-size:clamp(12px,2.5vw,14px);color:var(--gold-dim);margin-top:8px;">${totalDesc}</p>
     </div>
-
     <div class="content-wrap">
-
-      <div class="dims-sec">
-        <div class="sec-head">六维画像</div>
-        ${dimHtml}
-      </div>
-
+      <div class="dims-sec"><div class="sec-head">六维雷达画像</div>${dimHtml}</div>
       <div class="analysis-wrap">
-
+        <div class="a-block">
+          <div class="a-tag">你是哪种人</div>
+          <div class="a-head">${whoName}</div>
+          <div class="a-body" style="font-size:clamp(14px,3vw,17px);color:var(--text);font-weight:400;">${whoDesc}</div>
+        </div>
         <div class="a-block">
           <div class="a-tag">核心模式</div>
           <div class="a-head">关于你和钱的真相</div>
           <div class="a-body">${insight.replace(/\n/g,'<br>')}</div>
         </div>
-
-        ${hidden?`<div class="a-block">
-          <div class="a-tag">隐藏规律</div>
-          <div class="a-head">你可能没意识到的一件事</div>
-          <div class="a-body">${hidden.replace(/\n/g,'<br>')}</div>
-        </div>`:''}
-
+        ${hidden?`<div class="a-block"><div class="a-tag">你最需要注意的一件事</div><div class="a-head">隐藏规律</div><div class="a-body">${hidden.replace(/\n/g,'<br>')}</div></div>`:''}
         ${dimBlocks}
-
-        ${relations?`<div class="a-block">
-          <div class="a-tag">关系影响</div>
-          <div class="a-head">这如何影响你和身边人</div>
-          <div class="a-body">${relations.replace(/\n/g,'<br>')}</div>
-        </div>`:''}
-
-        ${actions?`<div class="a-block">
-          <div class="a-tag">疗愈行动</div>
-          <div class="a-head">三件可以立刻开始的小事</div>
-          <div class="a-body">${actionHtml}</div>
-        </div>`:''}
-
+        ${relations?`<div class="a-block"><div class="a-tag">关系影响</div><div class="a-head">这如何影响你和身边人</div><div class="a-body">${relations.replace(/\n/g,'<br>')}</div></div>`:''}
+        ${actions?`<div class="a-block"><div class="a-tag">疗愈行动</div><div class="a-head">三件可以立刻开始的小事</div><div class="a-body">${actionHtml}</div></div>`:''}
       </div>
-
       <div class="quote-wrap">
-        <div class="quote-card">
-          <div class="quote-text">${quote.replace(/\n/g,'<br>')}</div>
-        </div>
-        <button class="btn-share" onclick="shareIt()">截图分享给朋友 ↗</button>
+        <div class="quote-card"><div class="quote-text">${quote.replace(/\n/g,'<br>')}</div></div>
+        <button class="btn-share" onclick="shareIt()">让你的朋友也测测吧 →</button>
       </div>
-
     </div>`;
 
   showPage('p-result');
-
   setTimeout(()=>{
     const c=document.getElementById('ring-c');
     if(c) c.style.strokeDashoffset=offset;
@@ -534,6 +509,7 @@ function renderResult(scores,type,aiText){
     document.querySelectorAll('.dim-bar').forEach(b=>setTimeout(()=>{b.style.width=b.dataset.w+'%';},200));
   },150);
 }
+
 
 function shareIt(){
   alert('请长按屏幕截图，保存后分享给朋友 ✦\n\n让更多人来测测自己的金钱心理');
