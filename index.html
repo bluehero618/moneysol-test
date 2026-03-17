@@ -458,14 +458,53 @@ function parseAI(text){
   return out;
 }
 
+// 安全转义：防止AI返回内容中的特殊字符破坏HTML
+function safe(str){
+  if(!str) return '';
+  return str
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// 安全换行转换（在safe之后调用）
+function safeLines(str){
+  return safe(str).replace(/\n/g,'<br>');
+}
+
+// 用DOM节点方式设置内容，完全避免模板字符串被AI内容截断
+function setBlock(container, tag, head, body, bodyStyle){
+  const block = document.createElement('div');
+  block.className = 'a-block';
+
+  const tagEl = document.createElement('div');
+  tagEl.className = 'a-tag';
+  tagEl.textContent = tag;
+  block.appendChild(tagEl);
+
+  const headEl = document.createElement('div');
+  headEl.className = 'a-head';
+  headEl.textContent = head;
+  block.appendChild(headEl);
+
+  const bodyEl = document.createElement('div');
+  bodyEl.className = 'a-body';
+  if(bodyStyle) bodyEl.style.cssText = bodyStyle;
+  bodyEl.innerHTML = body.replace(/\n/g,'<br>');
+  block.appendChild(bodyEl);
+
+  container.appendChild(block);
+}
+
 function renderResult(scores,type,aiText){
   const p=parseAI(aiText);
   const total=scores._total;
   const circ=339.3;
   const offset=circ-(total/100)*circ;
 
-  const title      = p['主标题']    || `「${type.name}」`;
-  const totalDesc  = p['综合解读']  || `综合创伤指数：${total}分，满分100分`;
+  const title      = p['主标题']    || ('「'+type.name+'」');
+  const totalDesc  = p['综合解读']  || ('综合创伤指数：'+total+'分，满分100分');
   const whoAmI     = p['你是哪种人']|| '';
   const insight    = p['主要洞察']  || type.desc;
   const hidden     = p['隐藏规律']  || '';
@@ -477,63 +516,102 @@ function renderResult(scores,type,aiText){
   savedRelations=relations; savedActions=actions;
   savedQuote=quote; savedHidden=hidden; savedInsight=insight;
 
+  // 构建六维条形图 HTML（只含分数和颜色，安全）
   let dimHtml='';
   for(const[dim,val]of Object.entries(scores)){
     if(dim==='_total') continue;
-    dimHtml+=`<div class="dim-row">
-      <div class="dim-top"><span class="dim-name">${dim}</span><span class="dim-pct">${val.pct}</span></div>
-      <div class="dim-track"><div class="dim-bar" data-w="${val.pct}" style="background:${val.color}"></div></div>
-    </div>`;
+    dimHtml+='<div class="dim-row"><div class="dim-top"><span class="dim-name">'+dim+'</span><span class="dim-pct">'+val.pct+'</span></div><div class="dim-track"><div class="dim-bar" data-w="'+val.pct+'" style="background:'+val.color+'"></div></div></div>';
   }
 
+  // 解析"你是哪种人"（用文本节点，不用innerHTML）
   const whoLines = whoAmI.split('\n').filter(l=>l.trim());
-  const whoName = whoLines[0] || `「${type.name}」`;
-  const whoDesc = whoLines[1] || type.desc;
+  const whoName = whoLines[0] || ('「'+type.name+'」');
+  const whoDesc = whoLines.slice(1).join('\n') || type.desc;
 
-  const actionHtml = actions.split('\n').filter(l=>l.trim())
-    .map(l=>`<div style="padding:14px 0;border-bottom:1px solid var(--br);font-size:clamp(13px,2.5vw,15px);color:var(--text2);line-height:1.9;font-weight:300;">${l}</div>`)
-    .join('');
+  // 构建静态骨架（不含任何AI内容）
+  const rc = document.getElementById('result-content');
+  rc.innerHTML = '';
 
-  const dimBlocks = dimDetails ? dimDetails.split(/\n---\n/).filter(b=>b.trim()).map(block=>{
-    const lines = block.trim().split('\n');
-    const head = lines[0]||'';
-    const body = lines.slice(1).join('\n').trim();
-    return `<div class="a-block"><div class="a-tag">维度解读</div><div class="a-head">${head}</div><div class="a-body">${body.replace(/\n/g,'<br>')}</div></div>`;
-  }).join('') : '';
+  // Hero区
+  const hero = document.createElement('div');
+  hero.className = 'r-hero';
+  hero.innerHTML = '<div class="r-eyebrow">你的专属金钱心理报告</div>'
+    + '<div class="r-title" id="r-title-el"></div>'
+    + '<div class="ring-wrap"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="54"/><circle class="ring-val" id="ring-c" cx="60" cy="60" r="54"/></svg><div class="ring-inner"><span class="ring-num" id="ring-n">0</span><div class="ring-label">综合指数</div></div></div>'
+    + '<p class="r-hero-desc" id="total-desc-el" style="font-size:clamp(12px,2.5vw,14px);color:var(--gold-dim);margin-top:8px;"></p>';
+  rc.appendChild(hero);
+  // 用textContent安全设置AI内容
+  document.getElementById('r-title-el').textContent = title;
+  document.getElementById('total-desc-el').textContent = totalDesc;
 
-  document.getElementById('result-content').innerHTML=`
-    <div class="r-hero">
-      <div class="r-eyebrow">你的专属金钱心理报告</div>
-      <div class="r-title">${title}</div>
-      <div class="ring-wrap">
-        <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="54"/><circle class="ring-val" id="ring-c" cx="60" cy="60" r="54"/></svg>
-        <div class="ring-inner"><span class="ring-num" id="ring-n">0</span><div class="ring-label">综合指数</div></div>
-      </div>
-      <p class="r-hero-desc" style="font-size:clamp(12px,2.5vw,14px);color:var(--gold-dim);margin-top:8px;">${totalDesc}</p>
-    </div>
-    <div class="content-wrap">
-      <div class="dims-sec"><div class="sec-head">六维雷达画像</div>${dimHtml}</div>
-      <div class="analysis-wrap">
-        <div class="a-block">
-          <div class="a-tag">你是哪种人</div>
-          <div class="a-head">${whoName}</div>
-          <div class="a-body" style="font-size:clamp(14px,3vw,17px);color:var(--text);font-weight:400;">${whoDesc}</div>
-        </div>
-        <div class="a-block">
-          <div class="a-tag">核心模式</div>
-          <div class="a-head">关于你和钱的真相</div>
-          <div class="a-body">${insight.replace(/\n/g,'<br>')}</div>
-        </div>
-        ${hidden?`<div class="a-block"><div class="a-tag">你最需要注意的一件事</div><div class="a-head">隐藏规律</div><div class="a-body">${hidden.replace(/\n/g,'<br>')}</div></div>`:''}
-        ${dimBlocks}
-        ${relations?`<div class="a-block"><div class="a-tag">关系影响</div><div class="a-head">这如何影响你和身边人</div><div class="a-body">${relations.replace(/\n/g,'<br>')}</div></div>`:''}
-        ${actions?`<div class="a-block"><div class="a-tag">疗愈行动</div><div class="a-head">三件可以立刻开始的小事</div><div class="a-body">${actionHtml}</div></div>`:''}
-      </div>
-      <div class="quote-wrap">
-        <div class="quote-card"><div class="quote-text">${quote.replace(/\n/g,'<br>')}</div></div>
-        
-      </div>
-    </div>`;
+  // 内容区
+  const wrap = document.createElement('div');
+  wrap.className = 'content-wrap';
+
+  // 六维图
+  const dimSec = document.createElement('div');
+  dimSec.className = 'dims-sec';
+  dimSec.innerHTML = '<div class="sec-head">六维雷达画像</div>' + dimHtml;
+  wrap.appendChild(dimSec);
+
+  // 分析区
+  const analysis = document.createElement('div');
+  analysis.className = 'analysis-wrap';
+
+  // 你是哪种人
+  setBlock(analysis, '你是哪种人', whoName, whoDesc, 'font-size:clamp(14px,3vw,17px);color:var(--text);font-weight:400;');
+
+  // 核心模式
+  setBlock(analysis, '核心模式', '关于你和钱的真相', insight);
+
+  // 隐藏规律
+  if(hidden) setBlock(analysis, '你最需要注意的一件事', '隐藏规律', hidden);
+
+  // 维度解读（按 --- 分段）
+  if(dimDetails){
+    dimDetails.split(/\n---\n/).filter(b=>b.trim()).forEach(block=>{
+      const blines = block.trim().split('\n');
+      const bhead = blines[0]||'';
+      const bbody = blines.slice(1).join('\n').trim();
+      setBlock(analysis, '维度解读', bhead, bbody);
+    });
+  }
+
+  // 关系影响
+  if(relations) setBlock(analysis, '关系影响', '这如何影响你和身边人', relations);
+
+  // 疗愈行动
+  if(actions){
+    const actionWrap = document.createElement('div');
+    actionWrap.className = 'a-block';
+    actionWrap.innerHTML = '<div class="a-tag">疗愈行动</div><div class="a-head">三件可以立刻开始的小事</div>';
+    const actionBody = document.createElement('div');
+    actionBody.className = 'a-body';
+    actions.split('\n').filter(l=>l.trim()).forEach(line=>{
+      const d = document.createElement('div');
+      d.style.cssText = 'padding:14px 0;border-bottom:1px solid var(--br);font-size:clamp(13px,2.5vw,15px);color:var(--text2);line-height:1.9;font-weight:300;';
+      d.textContent = line;
+      actionBody.appendChild(d);
+    });
+    actionWrap.appendChild(actionBody);
+    analysis.appendChild(actionWrap);
+  }
+
+  wrap.appendChild(analysis);
+
+  // 金句
+  const quoteWrap = document.createElement('div');
+  quoteWrap.className = 'quote-wrap';
+  const quoteCard = document.createElement('div');
+  quoteCard.className = 'quote-card';
+  const quoteText = document.createElement('div');
+  quoteText.className = 'quote-text';
+  quoteText.textContent = quote;
+  quoteCard.appendChild(quoteText);
+  quoteWrap.appendChild(quoteCard);
+  wrap.appendChild(quoteWrap);
+
+  rc.appendChild(wrap);
 
   showPage('p-result');
   setTimeout(()=>{
@@ -544,6 +622,7 @@ function renderResult(scores,type,aiText){
     document.querySelectorAll('.dim-bar').forEach(b=>setTimeout(()=>{b.style.width=b.dataset.w+'%';},200));
   },150);
 }
+
 
 
 function shareIt(){
