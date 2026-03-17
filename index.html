@@ -383,7 +383,7 @@ async function generateReport(){
     "高分题目（2-3分）：" + highScores,
     "全部答案（0从不1偶尔2经常3总是）：" + allAnswers,
     "",
-    "总字数不低于2500字，每个板块完整输出不截断。",
+    "总字数1500-2000字，每个板块内容完整，不截断，不省略任何板块。",
     "",
     "按以下格式输出，===包裹部分名称，===外不加任何文字：",
     "",
@@ -398,7 +398,7 @@ async function generateReport(){
     "第二行：两句话共40字以内，第一句说这个人的核心策略是什么，第二句说这个策略背后用户没意识到的深层逻辑或恐惧",
     "",
     "===主要洞察===",
-    "350-400字，三段：",
+    "250-300字，三段：",
     "第一段100字：用2-3个具体高分题目行为讲一个场景，像在讲这个人的故事，用当你或你会开头。",
     "第二段100字：追溯这些行为的来源，用你学到了开头，说清楚是从哪里、以什么方式习得的，引用家族传递相关题目。",
     "第三段150字：两层穿透——先说表象（你以为这是什么），再说深层（但实际上这背后是什么逻辑或恐惧）。最后一句要有重量，让人停下来。",
@@ -407,7 +407,7 @@ async function generateReport(){
     "200-250字，找出一个反直觉发现。两层穿透：先说数据发现，再说这个发现背后用户没意识到的无意识模式。让用户说：对，这我从来没想过。",
     "",
     "===维度解读===",
-    "得分最高的三个维度，每个400-450字，用单独一行三个连字符分隔。",
+    "得分最高的三个维度，每个250-300字，用单独一行三个连字符分隔。",
     "格式：",
     "第一行：维度名（XX分）：「8-12字副标题，直接描述这个维度在这个用户身上最典型的无意识行为或内心逻辑」",
     "第一段100字：这个维度的高分题在日常生活中具体是什么场景，描述2-3个画面。",
@@ -415,7 +415,7 @@ async function generateReport(){
     "第三段150字：这个模式在用户现在的生活里造成了什么具体影响，举2-3个真实场景，包括一个用户可能从没把它和这个维度联系起来的场景。",
     "",
     "===关系影响===",
-    "350-400字，三个场景：",
+    "250字左右，三个场景：",
     "1【与伴侣】150字，描述一个有对话感的具体场景，两层穿透：你的表面反应是什么，以及对方看到的和你内心真正发生的是什么，关系里由此形成了什么模式。引用具体答题。",
     "2【与孩子或未来】100字，如果延续这个模式，孩子可能无意识习得什么具体信念，用具体例子。",
     "3【在职场】100字，一个典型场景，两层穿透：表面行为是什么，背后是什么在驱动，实际代价是什么。",
@@ -434,20 +434,68 @@ async function generateReport(){
 
 
 
+  // 更新loading提示
+  const loadingH = document.querySelector('.loading-h');
+  const loadingP = document.querySelector('.loading-p');
+  if(loadingH) loadingH.textContent = '正在生成你的专属报告';
+  if(loadingP) loadingP.innerHTML = 'AI 正在认真阅读你的每一个答案<br>文字生成中，请稍候…';
+
   try{
-    const r=await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const r = await fetch('/api/report', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({prompt})
+    });
+
     if(!r.ok){
-      const err=await r.json().catch(()=>({}));
-      console.error('API错误:',r.status, err);
+      console.error('API错误:', r.status);
+      renderResult(scores, type, '');
+      return;
     }
-    const d=await r.json();
-    if(!d.text){console.warn('API返回空内容',d);}
-    console.log('AI原始返回前200字:', (d.text||'').substring(0,200));
-    console.log('parseAI结果:', JSON.stringify(parseAI(d.text||'')));
-    renderResult(scores,type,d.text||'');
+
+    // 流式读取
+    const reader = r.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = '';
+    let charCount = 0;
+
+    while(true){
+      const {done, value} = await reader.read();
+      if(done) break;
+
+      const chunk = decoder.decode(value, {stream: true});
+      const lines = chunk.split('\n');
+
+      for(const line of lines){
+        const trimmed = line.trim();
+        if(!trimmed || trimmed === 'data: [DONE]') continue;
+        if(!trimmed.startsWith('data: ')) continue;
+
+        try{
+          const json = JSON.parse(trimmed.slice(6));
+          if(json.delta){
+            fullText += json.delta;
+            charCount += json.delta.length;
+            // 每100字更新一次提示
+            if(loadingP && charCount % 100 < 5){
+              loadingP.innerHTML = '已生成 ' + charCount + ' 字<br>继续生成中…';
+            }
+          }
+          if(json.error){
+            console.error('流式错误:', json.error);
+          }
+        }catch(e){
+          // 忽略解析错误
+        }
+      }
+    }
+
+    console.log('流式接收完成，总字数:', fullText.length);
+    renderResult(scores, type, fullText);
+
   }catch(e){
-    console.error('请求失败:',e);
-    renderResult(scores,type,'');
+    console.error('请求失败:', e);
+    renderResult(scores, type, '');
   }
 }
 
