@@ -405,6 +405,15 @@ function renderResult(scores,type,aiText){
 
   savedRelations=relations; savedActions=actions; savedQuote=quote;
 
+  // 隐藏规律只显示第一句
+  const hiddenSentences = hidden.split(/[。！？\n]/).filter(s=>s.trim());
+  const hiddenFirst = hiddenSentences[0] ? hiddenSentences[0]+'。' : '';
+
+  // 疗愈行动拆分（第一条免费，其余付费）
+  const actionLines = actions.split('\n').filter(l=>l.trim());
+  const firstAction = actionLines[0] || '';
+  const restActions = actionLines.slice(1).join('\n');
+
   let dimHtml='';
   for(const[dim,val]of Object.entries(scores)){
     if(dim==='_total') continue;
@@ -425,30 +434,45 @@ function renderResult(scores,type,aiText){
     <div class="content-wrap">
       <div class="dims-sec"><div class="sec-head">六维画像</div>${dimHtml}</div>
       <div class="analysis-wrap">
-        <div class="a-block"><div class="a-tag">核心模式</div><div class="a-head">关于你和钱的真相</div><div class="a-body">${insight.replace(/\n/g,'<br>')}</div></div>
-        ${hidden?`<div class="a-block"><div class="a-tag">隐藏规律</div><div class="a-head">你可能没意识到的一件事</div><div class="a-body">${hidden.replace(/\n/g,'<br>')}</div></div>`:''}
+        <div class="a-block">
+          <div class="a-tag">核心模式</div>
+          <div class="a-head">关于你和钱的真相</div>
+          <div class="a-body">${insight.replace(/\n/g,'<br>')}</div>
+        </div>
+        ${hidden?`<div class="a-block">
+          <div class="a-tag">隐藏规律</div>
+          <div class="a-head">你可能没意识到的一件事</div>
+          <div class="a-body">${hiddenFirst}</div>
+        </div>`:''}
       </div>
       <div class="paywall-wrap">
         <div class="pw-inner">
-          <div class="pw-blur"><div class="a-block" style="padding:20px 0 0"><div class="a-tag">关系影响</div><div class="a-head">这如何影响你和身边人</div><div class="a-body">${(relations||'这种金钱模式在亲密关系中会以特定方式显现…').substring(0,50)}…</div></div></div>
+          <div class="pw-blur">
+            <div style="padding:20px 20px 0">
+              <div class="a-tag">隐藏规律（续）</div>
+              <div class="a-head" style="font-family:'Noto Serif SC',serif;font-size:clamp(15px,3vw,19px);font-weight:600;margin:10px 0 8px;">……</div>
+              <div class="a-body" style="font-size:14px;color:var(--text2);line-height:1.9;">${hidden ? hidden.substring(20,80)+'…' : ''}</div>
+            </div>
+            <div style="padding:16px 20px 20px;border-top:1px solid var(--br);margin-top:16px;">
+              <div class="a-tag">关系影响</div>
+              <div class="a-body" style="font-size:13px;color:var(--text2);margin-top:8px;">${relations ? relations.substring(0,40)+'…' : ''}</div>
+            </div>
+          </div>
           <div class="pw-gate">
             <div class="pw-icon">🔐</div>
             <div class="pw-h">解锁完整深度报告</div>
-            <div class="pw-sub">看完整关系分析和专属疗愈方案</div>
+            <div class="pw-sub">你刚看到了冰山一角<br>完整报告等你来看</div>
             <div class="pw-list">
-              <div class="pw-item">与伴侣最容易爆发的金钱摩擦</div>
-              <div class="pw-item">你可能正在传递给孩子的金钱信念</div>
+              <div class="pw-item">隐藏规律完整解读</div>
+              <div class="pw-item">这种模式如何影响你的亲密关系</div>
               <div class="pw-item">职场合作时最容易吃的暗亏</div>
-              <div class="pw-item">针对你的3个专属疗愈行动</div>
+              <div class="pw-item">3个针对你的专属疗愈行动</div>
+              <div class="pw-item">你的专属金句（适合截图分享）</div>
             </div>
             <button class="btn-pay" onclick="unlockReport()">解锁完整报告 · ¥9.9</button>
             <p class="pw-note">一次付费，永久查看 · 微信支付</p>
           </div>
         </div>
-      </div>
-      <div class="quote-wrap">
-        <div class="quote-card"><div class="quote-text">${quote.replace(/\n/g,'<br>')}</div></div>
-        <button class="btn-share" onclick="shareIt()">截图分享给朋友 ↗</button>
       </div>
     </div>`;
 
