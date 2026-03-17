@@ -378,9 +378,17 @@ async function generateReport(){
 
   try{
     const r=await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    if(!r.ok){
+      const err=await r.json().catch(()=>({}));
+      console.error('API错误:',r.status, err);
+    }
     const d=await r.json();
+    if(!d.text){console.warn('API返回空内容',d);}
     renderResult(scores,type,d.text||'');
-  }catch(e){renderResult(scores,type,'');}
+  }catch(e){
+    console.error('请求失败:',e);
+    renderResult(scores,type,'');
+  }
 }
 
 function parseAI(text){
