@@ -282,7 +282,7 @@ const TYPES={
 };
 
 let cur=0, ans=new Array(28).fill(null);
-let savedRelations='', savedActions='', savedQuote='', savedHidden='';
+let savedRelations='', savedActions='', savedQuote='', savedHidden='', savedInsight='';
 
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -349,35 +349,49 @@ async function generateReport(){
   const scores=calcScores();
   const type=getType(scores);
   const dimSummary=Object.entries(scores).filter(([k])=>k!=='_total').map(([k,v])=>`${k}:${v.pct}分`).join('，');
-  const highScores=ans.map((a,i)=>a>=2?`Q${i+1}(${OPTS[a]}):${QS[i].q.slice(0,15)}`:'').filter(Boolean).join('；');
+  const highScores=ans.map((a,i)=>a>=2?`Q${i+1}得${a}分(${QS[i].q.slice(0,18)})`:'').filter(Boolean).join('；');
+  const allAnswers=ans.map((a,i)=>`Q${i+1}=${a}`).join(',');
 
-  const prompt=`你是金钱心理学专家，语言温柔直击内心。
+  const prompt=`你是一位有20年经验的金钱心理学专家，文字风格像李松蔚的心理科普——温柔、精准、有穿透力，让人读完觉得"被看见了"。
 
-用户测评结果：
-综合指数：${scores._total}分
-各维度：${dimSummary}
-心理类型：${type.name}（最突出维度：${type.topDim}）
-高分答题（2-3分）：${highScores}
+用户28题测评完整数据：
+综合创伤指数：${scores._total}分（满分100）
+各维度百分制：${dimSummary}
+最突出维度：${type.topDim}（${scores[type.topDim]?.pct}分）
+心理类型：${type.name}
+高分题目（2-3分）：${highScores}
+全部答案（0=从不,1=偶尔,2=经常,3=总是）：${allAnswers}
 
-请生成个性化报告，严格按格式，用===分隔，不加其他文字：
+核心要求：每一段必须引用用户的具体答题，让用户觉得"这在说我"而不是通用模板。
+
+严格按以下格式输出，用===分隔，===之间的内容完整输出，不要截断：
 
 ===主标题===
-15字以内，「」包裹，体现该用户最突出特征，禁止套模板
+12-18字，「」包裹，点出该用户最核心的金钱心理困境，必须是这个用户独有的
 
 ===主要洞察===
-150-200字，基于用户高分答题分析，举具体行为，语气像懂你的朋友说话
+250字左右。三个层次自然流动：1)用户最突出的外显行为（引用具体高分题目）2)这个行为背后的内在逻辑 3)用户"自己说不清但感觉对"的深层感受。语气像一个懂你的朋友，不说教。
 
 ===隐藏规律===
-100-150字，找出用户答题中一个出乎意料的规律，基于真实数据
+200字左右。找出答题数据中一个反直觉的发现——某维度意外低/两个矛盾高分并存/某个行为与直觉相反。必须有具体题目数据支撑，让用户说"对，我从没想过这个角度"。
+
+===维度解读===
+对得分最高的三个维度分别做深度解读，每个维度之间用单独一行"---"分隔。
+每个维度的格式：
+第一行写维度名称和得分，如：家族传递（83分）：金钱的秘密，被你藏得多深
+之后150字左右，深入解读这个维度对该用户意味着什么，引用该维度下的具体高分题目，描述具体行为场景。
 
 ===关系影响===
-100-150字，具体描述这种模式如何在亲密关系或职场中显现，有场景感
+250字左右，三个具体场景：
+1)【与伴侣】具体描述这种金钱模式如何在亲密关系中制造摩擦，有画面感的场景
+2)【与孩子/未来】如果有孩子，这种模式可能如何传递；或者在亲密关系里的未来风险
+3)【在职场】具体描述如何影响职业发展和合作关系，比如谈薪、追款、表现自我价值等
 
 ===疗愈行动===
-三条，每条格式：· 行动：原因，针对用户最高分维度定制
+三条行动，每条80-100字。格式：· [行动名称]：[具体做什么] [为什么有效] [预期变化]。必须针对该用户最高分维度量身定制，不能是通用建议。
 
 ===专属金句===
-15-20字，温柔有力，根据用户类型定制，禁用"你值得""你配"等说法`;
+18-25字，有意境，像一句会被截图收藏的话。根据用户核心模式定制，禁用"你值得""你配""疗愈""丰盛"等滥用词。`;
 
   try{
     const r=await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
@@ -407,27 +421,44 @@ function renderResult(scores,type,aiText){
   const circ=339.3;
   const offset=circ-(total/100)*circ;
 
-  const title=p['主标题']||`「${type.name}」`;
-  const insight=p['主要洞察']||type.desc;
-  const hidden=p['隐藏规律']||'';
-  const relations=p['关系影响']||'';
-  const actions=p['疗愈行动']||'';
-  const quote=p['专属金句']||'每一次看见自己，都是疗愈的开始。';
+  const title    = p['主标题']    || `「${type.name}」`;
+  const insight  = p['主要洞察']  || type.desc;
+  const hidden   = p['隐藏规律']  || '';
+  const relations= p['关系影响']  || '';
+  const actions  = p['疗愈行动']  || '';
+  const quote    = p['专属金句']  || '每一次看见自己，都是疗愈的开始。';
+  const dimDetails = p['维度解读'] || '';
 
-  savedRelations=relations; savedActions=actions; savedQuote=quote; savedHidden=hidden;
-  const hiddenSentences = hidden.split(/[。！？\n]/).filter(s=>s.trim());
-  const hiddenFirst = hiddenSentences[0] ? hiddenSentences[0]+'。' : '';
+  savedRelations=relations; savedActions=actions;
+  savedQuote=quote; savedHidden=hidden; savedInsight=insight;
 
-  // 疗愈行动拆分（第一条免费，其余付费）
-  const actionLines = actions.split('\n').filter(l=>l.trim());
-  const firstAction = actionLines[0] || '';
-  const restActions = actionLines.slice(1).join('\n');
-
+  // 六维条形图
   let dimHtml='';
   for(const[dim,val]of Object.entries(scores)){
     if(dim==='_total') continue;
-    dimHtml+=`<div class="dim-row"><div class="dim-top"><span class="dim-name">${dim}</span><span class="dim-pct">${val.pct}</span></div><div class="dim-track"><div class="dim-bar" data-w="${val.pct}" style="background:${val.color}"></div></div></div>`;
+    dimHtml+=`<div class="dim-row">
+      <div class="dim-top"><span class="dim-name">${dim}</span><span class="dim-pct">${val.pct}</span></div>
+      <div class="dim-track"><div class="dim-bar" data-w="${val.pct}" style="background:${val.color}"></div></div>
+    </div>`;
   }
+
+  // 疗愈行动格式化
+  const actionHtml = actions.split('\n').filter(l=>l.trim())
+    .map(l=>`<div style="padding:14px 0;border-bottom:1px solid var(--br);
+      font-size:clamp(13px,2.5vw,15px);color:var(--text2);line-height:1.9;font-weight:300;">${l}</div>`)
+    .join('');
+
+  // 维度解读格式化（按---分段）
+  const dimBlocks = dimDetails ? dimDetails.split(/\n---\n/).filter(b=>b.trim()).map(block=>{
+    const lines = block.trim().split('\n');
+    const head = lines[0]||'';
+    const body = lines.slice(1).join('\n').trim();
+    return `<div class="a-block">
+      <div class="a-tag">维度解读</div>
+      <div class="a-head">${head}</div>
+      <div class="a-body">${body.replace(/\n/g,'<br>')}</div>
+    </div>`;
+  }).join('') : '';
 
   document.getElementById('result-content').innerHTML=`
     <div class="r-hero">
@@ -435,54 +466,62 @@ function renderResult(scores,type,aiText){
       <div class="r-type">主要类型：${type.name}</div>
       <div class="r-title">${title}</div>
       <div class="ring-wrap">
-        <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="54"/><circle class="ring-val" id="ring-c" cx="60" cy="60" r="54"/></svg>
-        <div class="ring-inner"><span class="ring-num" id="ring-n">0</span><div class="ring-label">综合指数</div></div>
+        <svg viewBox="0 0 120 120">
+          <circle class="ring-bg" cx="60" cy="60" r="54"/>
+          <circle class="ring-val" id="ring-c" cx="60" cy="60" r="54"/>
+        </svg>
+        <div class="ring-inner">
+          <span class="ring-num" id="ring-n">0</span>
+          <div class="ring-label">综合指数</div>
+        </div>
       </div>
       <p class="r-hero-desc">${type.desc}</p>
     </div>
+
     <div class="content-wrap">
-      <div class="dims-sec"><div class="sec-head">六维画像</div>${dimHtml}</div>
+
+      <div class="dims-sec">
+        <div class="sec-head">六维画像</div>
+        ${dimHtml}
+      </div>
+
       <div class="analysis-wrap">
+
         <div class="a-block">
           <div class="a-tag">核心模式</div>
           <div class="a-head">关于你和钱的真相</div>
           <div class="a-body">${insight.replace(/\n/g,'<br>')}</div>
         </div>
+
         ${hidden?`<div class="a-block">
           <div class="a-tag">隐藏规律</div>
           <div class="a-head">你可能没意识到的一件事</div>
-          <div class="a-body">${hiddenFirst}</div>
+          <div class="a-body">${hidden.replace(/\n/g,'<br>')}</div>
         </div>`:''}
+
+        ${dimBlocks}
+
+        ${relations?`<div class="a-block">
+          <div class="a-tag">关系影响</div>
+          <div class="a-head">这如何影响你和身边人</div>
+          <div class="a-body">${relations.replace(/\n/g,'<br>')}</div>
+        </div>`:''}
+
+        ${actions?`<div class="a-block">
+          <div class="a-tag">疗愈行动</div>
+          <div class="a-head">三件可以立刻开始的小事</div>
+          <div class="a-body">${actionHtml}</div>
+        </div>`:''}
+
       </div>
-      <div class="paywall-wrap">
-        <div class="pw-inner">
-          <div class="pw-blur">
-            <div style="padding:20px 20px 0">
-              <div class="a-tag">隐藏规律（续）</div>
-              <div class="a-head" style="font-family:'Noto Serif SC',serif;font-size:clamp(15px,3vw,19px);font-weight:600;margin:10px 0 8px;">……</div>
-              <div class="a-body" style="font-size:14px;color:var(--text2);line-height:1.9;">${hidden ? hidden.substring(20,80)+'…' : ''}</div>
-            </div>
-            <div style="padding:16px 20px 20px;border-top:1px solid var(--br);margin-top:16px;">
-              <div class="a-tag">关系影响</div>
-              <div class="a-body" style="font-size:13px;color:var(--text2);margin-top:8px;">${relations ? relations.substring(0,40)+'…' : ''}</div>
-            </div>
-          </div>
-          <div class="pw-gate">
-            <div class="pw-icon">🔐</div>
-            <div class="pw-h">解锁完整深度报告</div>
-            <div class="pw-sub">你刚看到了冰山一角<br>完整报告等你来看</div>
-            <div class="pw-list">
-              <div class="pw-item">隐藏规律完整解读</div>
-              <div class="pw-item">这种模式如何影响你的亲密关系</div>
-              <div class="pw-item">职场合作时最容易吃的暗亏</div>
-              <div class="pw-item">3个针对你的专属疗愈行动</div>
-              <div class="pw-item">你的专属金句（适合截图分享）</div>
-            </div>
-            <button class="btn-pay" onclick="unlockReport()">解锁完整报告 · ¥9.9</button>
-            <p class="pw-note">一次付费，永久查看 · 微信支付</p>
-          </div>
+
+      <div class="quote-wrap">
+        <div class="quote-card">
+          <div class="quote-text">${quote.replace(/\n/g,'<br>')}</div>
         </div>
+        <button class="btn-share" onclick="shareIt()">截图分享给朋友 ↗</button>
       </div>
+
     </div>`;
 
   showPage('p-result');
@@ -494,127 +533,6 @@ function renderResult(scores,type,aiText){
     const t=setInterval(()=>{n=Math.min(n+2,total);if(el)el.textContent=n;if(n>=total)clearInterval(t);},28);
     document.querySelectorAll('.dim-bar').forEach(b=>setTimeout(()=>{b.style.width=b.dataset.w+'%';},200));
   },150);
-}
-
-// 兑换码列表（可以随时在这里添加新的码）
-const VALID_CODES = new Set([
-  'MONEY001','MONEY002','MONEY003','MONEY004','MONEY005',
-  'MONEY006','MONEY007','MONEY008','MONEY009','MONEY010',
-  'SOUL001','SOUL002','SOUL003','SOUL004','SOUL005',
-]);
-const USED_CODES_KEY = 'used_codes_v1';
-
-function getUsedCodes(){
-  try{ return new Set(JSON.parse(sessionStorage.getItem(USED_CODES_KEY)||'[]')); }
-  catch(e){ return new Set(); }
-}
-
-function markCodeUsed(code){
-  const used = getUsedCodes();
-  used.add(code);
-  sessionStorage.setItem(USED_CODES_KEY, JSON.stringify([...used]));
-}
-
-function unlockReport(){
-  // 弹出兑换码输入框
-  const overlay = document.createElement('div');
-  overlay.id = 'code-overlay';
-  overlay.style.cssText = `
-    position:fixed;inset:0;background:rgba(0,0,0,0.85);
-    display:flex;align-items:center;justify-content:center;
-    z-index:10000;padding:20px;
-  `;
-  overlay.innerHTML = `
-    <div style="background:var(--bg2);border:1px solid var(--br2);border-radius:20px;
-      padding:clamp(24px,5vw,40px);width:100%;max-width:360px;text-align:center;">
-      <div style="font-size:28px;margin-bottom:16px;">🔐</div>
-      <div style="font-family:'Noto Serif SC',serif;font-size:clamp(17px,4vw,21px);
-        font-weight:700;margin-bottom:8px;">输入兑换码</div>
-      <div style="font-size:clamp(12px,2.5vw,14px);color:var(--text2);
-        line-height:1.7;margin-bottom:24px;font-weight:300;">
-        在小红书下单后<br>我会私信发送你的专属兑换码
-      </div>
-      <input id="code-input" type="text" placeholder="请输入兑换码"
-        style="width:100%;background:var(--bg3);border:1px solid var(--br2);
-        border-radius:10px;padding:14px 16px;font-size:16px;color:var(--text);
-        font-family:'Noto Sans SC',sans-serif;text-align:center;
-        letter-spacing:3px;text-transform:uppercase;outline:none;margin-bottom:12px;"
-        oninput="this.value=this.value.toUpperCase()"
-      />
-      <div id="code-err" style="font-size:12px;color:#c97a5a;margin-bottom:12px;min-height:18px;"></div>
-      <button onclick="submitCode()" style="
-        width:100%;background:linear-gradient(135deg,#b8942e 0%,var(--gold-lt) 50%,#b8942e 100%);
-        color:#140f00;border:none;padding:15px;border-radius:50px;
-        font-size:16px;font-weight:700;font-family:'Noto Sans SC',sans-serif;
-        cursor:pointer;letter-spacing:1px;margin-bottom:12px;">
-        立即解锁
-      </button>
-      <button onclick="document.getElementById('code-overlay').remove()" style="
-        background:transparent;border:none;color:var(--text3);
-        font-size:13px;cursor:pointer;font-family:'Noto Sans SC',sans-serif;">
-        暂不解锁
-      </button>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  setTimeout(()=>document.getElementById('code-input')?.focus(), 100);
-}
-
-function submitCode(){
-  const input = document.getElementById('code-input');
-  const errEl = document.getElementById('code-err');
-  const code = input.value.trim().toUpperCase();
-
-  if(!code){ errEl.textContent='请输入兑换码'; return; }
-
-  const used = getUsedCodes();
-  if(used.has(code)){ errEl.textContent='该兑换码已被使用过'; return; }
-
-  if(!VALID_CODES.has(code)){ errEl.textContent='兑换码无效，请检查后重试'; return; }
-
-  // 验证通过
-  markCodeUsed(code);
-  document.getElementById('code-overlay').remove();
-  showUnlockedContent();
-}
-
-function showUnlockedContent(){
-  const scores=calcScores();
-  const type=getType(scores);
-
-  document.getElementById('unlocked-title').textContent=`「${type.name}」— 完整解读`;
-
-  // 渲染隐藏规律完整版（从savedHidden获取）
-  const hiddenFull = savedHidden || '';
-  // 疗愈行动完整版
-  const actionHtml = savedActions.split('\n').filter(l=>l.trim())
-    .map(l=>`<div style="padding:12px 0;border-bottom:1px solid var(--br);
-      font-size:clamp(13px,2.5vw,15px);color:var(--text2);
-      line-height:1.85;font-weight:300;">${l}</div>`).join('');
-
-  document.getElementById('unlocked-body').innerHTML=`
-    ${hiddenFull ? `<div class="a-block">
-      <div class="a-tag">隐藏规律 · 完整版</div>
-      <div class="a-head">你可能没意识到的一件事</div>
-      <div class="a-body">${hiddenFull.replace(/\n/g,'<br>')}</div>
-    </div>` : ''}
-    <div class="a-block">
-      <div class="a-tag">关系影响</div>
-      <div class="a-head">和身边人的金钱模式</div>
-      <div class="a-body">${(savedRelations||'').replace(/\n/g,'<br>')||'暂无内容'}</div>
-    </div>
-    <div class="a-block">
-      <div class="a-tag">疗愈行动</div>
-      <div class="a-head">三件可以立刻开始的小事</div>
-      <div class="a-body">${actionHtml||'暂无内容'}</div>
-    </div>
-  `;
-
-  const q = savedQuote || '每一次看见自己，都是疗愈的开始。';
-  document.getElementById('unlocked-quote').innerHTML=
-    `<div class="quote-text">${q.replace(/\n/g,'<br>')}</div>`;
-
-  showPage('p-unlocked');
 }
 
 function shareIt(){
