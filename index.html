@@ -19,7 +19,6 @@ html,body{height:100%;overflow:hidden;}
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-serif;}
 body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;}
 
-/* 每个页面独立全屏滚动 */
 .page{display:none;position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
 .page.active{display:block;animation:fadeIn .3s ease;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -103,7 +102,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .ring-inner{text-align:center;position:relative;z-index:1;}
 .ring-num{font-family:'Noto Serif SC',serif;font-size:clamp(28px,6vw,40px);font-weight:700;color:var(--gold);display:block;line-height:1;}
 .ring-label{font-size:clamp(10px,2vw,12px);color:var(--gold-dim);margin-top:2px;}
-.r-hero-desc{font-size:clamp(13px,2.5vw,15px);color:var(--text2);line-height:1.85;max-width:340px;margin:0 auto;font-weight:300;}
+.r-hero-desc{font-size:clamp(12px,2.5vw,14px);color:var(--gold-dim);margin-top:8px;line-height:1.85;max-width:340px;margin-left:auto;margin-right:auto;font-weight:300;}
 .content-wrap{max-width:720px;margin:0 auto;width:100%;}
 .dims-sec{padding:clamp(20px,4vw,32px) clamp(20px,5vw,48px);border-bottom:1px solid var(--br);}
 .sec-head{font-family:'Noto Serif SC',serif;font-size:clamp(13px,2.5vw,16px);font-weight:600;margin-bottom:clamp(14px,3vw,20px);display:flex;align-items:center;gap:10px;}
@@ -122,31 +121,10 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
 .a-body{font-size:clamp(13px,2.5vw,15px);color:var(--text2);line-height:1.95;font-weight:300;}
 .a-body strong{color:var(--text);font-weight:500;}
 .a-body em{color:var(--gold);font-style:normal;}
-.paywall-wrap{padding:0 clamp(20px,5vw,48px) clamp(20px,4vw,32px);}
-.pw-inner{border:1px solid var(--br);border-radius:18px;overflow:hidden;}
-.pw-blur{padding:clamp(18px,4vw,28px);filter:blur(5px);pointer-events:none;user-select:none;opacity:.5;}
-.pw-gate{border-top:1px solid var(--br);background:var(--bg2);padding:clamp(20px,4vw,32px);text-align:center;}
-.pw-icon{width:44px;height:44px;border-radius:50%;background:rgba(200,168,75,0.1);border:1px solid rgba(200,168,75,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto clamp(12px,2.5vw,18px);font-size:18px;}
-.pw-h{font-family:'Noto Serif SC',serif;font-size:clamp(16px,3.5vw,20px);font-weight:700;margin-bottom:8px;}
-.pw-sub{font-size:clamp(12px,2.5vw,14px);color:var(--text2);line-height:1.75;margin-bottom:clamp(16px,3vw,24px);font-weight:300;}
-.pw-list{display:flex;flex-direction:column;gap:9px;margin-bottom:clamp(16px,3vw,24px);text-align:left;}
-.pw-item{display:flex;align-items:flex-start;gap:9px;font-size:clamp(12px,2.5vw,14px);color:var(--text2);font-weight:300;line-height:1.5;}
-.pw-item::before{content:'✦';color:var(--gold);font-size:9px;flex-shrink:0;margin-top:3px;}
-.btn-pay{width:100%;background:linear-gradient(135deg,#b8942e 0%,var(--gold-lt) 50%,#b8942e 100%);color:#140f00;border:none;padding:clamp(14px,3vw,17px);border-radius:50px;font-size:clamp(14px,3vw,16px);font-weight:700;font-family:'Noto Sans SC',sans-serif;cursor:pointer;letter-spacing:1px;box-shadow:0 4px 24px rgba(200,168,75,.25);transition:all .25s;max-width:400px;display:block;margin:0 auto;}
-.btn-pay:active{transform:scale(.98);}
-.pw-note{font-size:clamp(10px,2vw,12px);color:var(--text3);margin-top:10px;}
 .quote-wrap{padding:clamp(16px,3vw,24px) clamp(20px,5vw,48px) clamp(30px,6vw,50px);}
 .quote-card{padding:clamp(22px,4vw,32px);border:1px solid var(--br);border-radius:18px;background:var(--bg2);text-align:center;position:relative;overflow:hidden;}
 .quote-card::before{content:'"';position:absolute;top:-10px;left:10px;font-size:100px;line-height:1;color:rgba(200,168,75,0.04);font-family:Georgia,serif;pointer-events:none;}
 .quote-text{font-family:'Noto Serif SC',serif;font-size:clamp(14px,3vw,17px);line-height:2;color:var(--text2);position:relative;z-index:1;}
-.quote-text em{color:var(--gold);font-style:normal;}
-.btn-share{display:block;width:100%;margin-top:clamp(10px,2vw,14px);padding:clamp(13px,2.5vw,15px);background:transparent;border:1px solid rgba(200,168,75,.25);border-radius:50px;color:var(--gold);font-size:clamp(13px,2.5vw,15px);font-weight:500;font-family:'Noto Sans SC',sans-serif;cursor:pointer;letter-spacing:.5px;transition:background .2s;}
-.btn-share:active{background:rgba(200,168,75,.06);}
-
-/* ── UNLOCKED ── */
-#p-unlocked{background:var(--bg);}
-.unlocked-hero{padding:clamp(28px,5vw,44px) clamp(20px,5vw,48px) clamp(20px,4vw,30px);text-align:center;background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%);border-bottom:1px solid var(--br);}
-.unlocked-title{font-family:'Noto Serif SC',serif;font-size:clamp(15px,3.5vw,20px);font-weight:600;color:var(--text);line-height:1.5;}
 
 @media(min-width:768px){
   .cover-inner{padding:60px 80px;}
@@ -172,8 +150,8 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     <h1 class="cover-title">你被童年<em>金钱创伤</em>影响了多深？</h1>
     <p class="cover-sub">父母的金钱观，悄悄住进了你的大脑<br>这份测评帮你看见那些从没被说出口的影响</p>
     <div class="cover-pills">
-      <div class="pill"><strong>28</strong> 道题目</div>
-      <div class="pill"><strong>6</strong> 个维度</div>
+      <div class="pill"><strong>30</strong> 道题目</div>
+      <div class="pill"><strong>5</strong> 个维度</div>
       <div class="pill">约 <strong>5</strong> 分钟</div>
       <div class="pill">AI 个性化报告</div>
     </div>
@@ -187,7 +165,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div class="quiz-sticky">
     <div class="quiz-sticky-row">
       <span class="ch-label" id="ch-label">第一章</span>
-      <span class="q-count" id="q-count">1 / 28</span>
+      <span class="q-count" id="q-count">1 / 30</span>
     </div>
     <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
   </div>
@@ -204,7 +182,7 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
     <div class="loading-h">正在生成你的专属报告</div>
     <p class="loading-p">AI 正在认真阅读你的每一个答案<br>这份报告只属于你，需要约 20 秒</p>
     <div class="loading-steps">
-      <div class="step-row"><div class="step-dot"></div>分析你的六大维度得分…</div>
+      <div class="step-row"><div class="step-dot"></div>分析你的五大维度得分…</div>
       <div class="step-row"><div class="step-dot"></div>识别你独特的金钱心理模式…</div>
       <div class="step-row"><div class="step-dot"></div>撰写你的个性化深度解读…</div>
     </div>
@@ -219,70 +197,59 @@ body::after{content:'';position:fixed;inset:0;background-image:url("data:image/s
   <div id="result-content"></div>
 </div>
 
-<!-- UNLOCKED -->
-<div id="p-unlocked" class="page">
-  <div class="unlocked-hero">
-    <div class="r-eyebrow">完整深度报告 · 已解锁</div>
-    <div class="unlocked-title" id="unlocked-title">延伸解读</div>
-  </div>
-  <div class="content-wrap">
-    <div class="analysis-wrap" id="unlocked-body"></div>
-    <div class="quote-wrap">
-      <div class="quote-card" id="unlocked-quote"></div>
-      
-    </div>
-  </div>
-</div>
-
 <script>
 const QS=[
-  {ch:'第一章：童年留下了什么',q:'小时候，"我们家没钱"这句话你是不是听了很多次？'},
-  {q:'你曾经想要某个东西，最后跟自己说"算了，不重要的"——但其实挺重要的？'},
-  {q:'开口管父母要钱，你会有一种说不清的不舒服？'},
-  {q:'你有没有偷偷藏过压岁钱，不让父母知道？'},
-  {q:'你的父母经常担心"要是有一天没钱了怎么办"——哪怕家里其实还好？'},
-  {ch:'第二章：家族传给你了什么',q:'家里有亲戚或邻居比你家有钱，父母会私下说"有什么了不起"？'},
-  {q:'父母对"有钱人"是一种又羡慕又看不上的态度？'},
-  {q:'家里把钱当成秘密，不告诉你家里到底有多少钱？'},
-  {q:'父母教过你"钱不能随便跟外人说"？'},
-  {ch:'第三章：钱和你现在的感受',q:'银行卡有余额，你还是会隐隐觉得不够安全？'},
-  {q:'每次发工资，你最先想到的是松了口气，而不是"这个月可以做什么"？'},
-  {q:'你存钱的动力，与其说是"想实现什么"，不如说是"怕某天没钱"？'},
-  {q:'有人好意要帮你或请你，你第一反应是"他想干什么"？'},
-  {ch:'第四章：你怎么跟钱相处',q:'你会主动不去看账单或余额，因为看了更焦虑？'},
-  {q:'该处理的财务事（还款、报税、记账）能拖就拖？'},
-  {q:'谈到钱的话题，你会感到不舒服并想转移话题？'},
-  {q:'花了一笔钱之后，会反复回放"这钱花得值不值"？'},
-  {ch:'第五章：钱和你的自我感觉',q:'刷到晒豪车豪宅的帖子，会觉得自己差人家一截？'},
-  {q:'朋友聚餐你会主动抢着买单，但回家又心疼那笔钱？'},
-  {q:'你觉得只要有足够的钱，现在烦恼的事大部分都能解决？'},
-  {q:'财务状况不好的时候，你会觉得整个人都很失败？'},
-  {ch:'第六章：钱和你的面子',q:'你对朋友或同学的收入，有一种"他们肯定比我多"的默认感？'},
-  {q:'你会通过请客或买某些东西，让别人觉得你过得不错？'},
-  {q:'你觉得一个人有没有钱，多少反映了他这个人行不行？'},
-  {ch:'第七章：钱和你身边的人',q:'你基本不会开口向别人借钱，宁可自己扛？'},
-  {q:'谈到自己的收入或存款，你会自动报低或含糊过去？'},
-  {q:'你觉得"谈钱伤感情"，钱的事能不说就不说？'},
-  {q:'哪怕是信任的朋友，你也不愿意让他们知道你真实的财务状况？'},
+  {ch:'第一章：金钱规避',q:'帮人做了件事，对方给钱，你收了之后会时不时想"是不是收多了"？'},
+  {q:'账单、催费短信，哪怕手里有钱，也总想着"待会儿再看"，结果一直没看？'},
+  {q:'在朋友圈发产品或服务，你会觉得很掉价，像是在消费这段关系？'},
+  {q:'看到有钱人翻车，心里会有一种"果然，有钱没好事"的轻松感？'},
+  {q:'赚到一笔不错的钱，但很快莫名花光了，自己也说不清花哪了？'},
+  {q:'你很少主动争取更高的报酬，开口要钱这件事本身就让你不舒服？'},
+  {ch:'第二章：金钱崇拜',q:'心里有一条线："攒够XX万就彻底自由了"，但那条线一直在往前移？'},
+  {q:'心情不好或受委屈，你会想买一个一直想要的东西补偿自己？'},
+  {q:'"还不是因为没钱""有钱谁干这个"，经常挂在嘴边或心里默念？'},
+  {q:'即使已经很忙很累，只要有赚钱的机会出现，你就会觉得不接对不起自己？'},
+  {q:'你觉得有钱之后，身边的人会更在意你、更尊重你？'},
+  {q:'有钱是需要藏着掖着的事，说出来怕别人嫉妒或者惦记？'},
+  {ch:'第三章：金钱地位',q:'几个人聚餐，如果不是你买单或出钱最少，会感到有点局促？'},
+  {q:'参加重要聚会，身上没有拿得出手的东西，会觉得自己矮人一截？'},
+  {q:'评价一个老同学混得好不好，第一反应是他住什么房子、开什么车？'},
+  {q:'谈合作报价，你说出口的数字比心里想的低，怕对方嫌贵？'},
+  {q:'客户一还价，没怎么犹豫就让步了，其实完全可以不让？'},
+  {q:'手头紧的时候，整个人莫名没底气，说话做事都缩一点？'},
+  {ch:'第四章：金钱警觉',q:'该谈涨薪了，你总能找到理由推迟，"再等等，时机不对"？'},
+  {q:'花了一笔大钱，接下来好几天脑子里反复想那钱值不值？'},
+  {q:'偶尔打个车或吃顿好的，享受还没持续多久，自责就来了？'},
+  {q:'对最亲近的人，也会留一部分钱不告诉他们，有私房钱才踏实？'},
+  {q:'觉得现在的稳定只是暂时的，随时可能出什么事把钱全花光？'},
+  {q:'不清楚每一笔钱在哪就会焦虑，需要随时掌控每一笔进出？'},
+  {ch:'第五章：童年金钱创伤',q:'父母因为钱吵架的场景，是你对童年最清晰的记忆之一？'},
+  {q:'小时候去商店，父母总说"这个太贵了"然后不买？'},
+  {q:'记得因为学费、校服或某件小事，在同学面前抬不起头？'},
+  {q:'钱是家里的禁忌话题，父母从来不说家里的财务状况？'},
+  {q:'"我不配要贵的东西"这种感觉，从小跟着你到现在？'},
+  {q:'账户里的钱刚到一定数额，就莫名其妙被花掉了，好像钱多了会触发某个开关？'},
 ];
+
 const OPTS=['从没有这样','偶尔会这样','经常这样','说的就是我'];
+
 const DIM_MAP={
-  '匮乏感与安全感':{qs:[0,1,4,9,10,11],max:18,color:'var(--teal)'},
-  '家族传递':{qs:[5,6,7,8],max:12,color:'var(--accent)'},
-  '金钱羞耻感':{qs:[2,3,24,25,27],max:15,color:'var(--gold)'},
-  '金钱回避':{qs:[12,13,14,15,16,26],max:18,color:'var(--blue)'},
-  '自我价值绑架':{qs:[17,18,19,20,21,22,23],max:21,color:'var(--purple)'},
-};
-const TYPES={
-  '匮乏感与安全感':{name:'安全感饥渴者',desc:'你的财务决策长期被恐惧驱动，而非目标驱动。有钱了也不一定安心。'},
-  '家族传递':{name:'金钱基因继承者',desc:'你把父母对钱的态度几乎原封不动地继承了下来，包括他们的焦虑和矛盾。'},
-  '金钱羞耻感':{name:'金钱隐形人',desc:'你学会了让钱和自己都不被看见，以此来避免受伤。但代价是你也把丰盛挡在了门外。'},
-  '金钱回避':{name:'鸵鸟型财务人',desc:'回避是你对抗金钱焦虑的保护机制。眼不见心不烦，但失控感在悄悄累积。'},
-  '自我价值绑架':{name:'价值证明者',desc:'你在用财富换取一种本该从内部生长出来的自我价值感。账户余额成了你的自信来源。'},
+  '金钱规避':{qs:[0,1,2,3,4,5],max:15,color:'var(--teal)'},
+  '金钱崇拜':{qs:[6,7,8,9,10,11],max:15,color:'var(--accent)'},
+  '金钱地位':{qs:[12,13,14,15,16,17],max:15,color:'var(--gold)'},
+  '金钱警觉':{qs:[18,19,20,21,22,23],max:15,color:'var(--blue)'},
+  '童年金钱创伤':{qs:[24,25,26,27,28,29],max:15,color:'var(--purple)'},
 };
 
-let cur=0, ans=new Array(28).fill(null);
-let savedRelations='', savedActions='', savedQuote='', savedHidden='', savedInsight='';
+const TYPES={
+  '金钱规避':{name:'隐形财富者',desc:'你潜意识里觉得钱是危险的，拥有太多会带来麻烦。你用各种方式让钱从指缝里溜走，却不知道是自己放走了它。'},
+  '金钱崇拜':{name:'终点线追逐者',desc:'你相信有了钱一切问题都会消失。那条"够了"的线一直在往前移，你一直在跑，却从没真正到达过。'},
+  '金钱地位':{name:'价值证明者',desc:'你用钱来衡量自己和别人。账户余额是你的底气来源，财务状况决定你说话的音量。'},
+  '金钱警觉':{name:'末日预备者',desc:'你把所有稳定都当成暂时的。存钱不是为了目标，是为了对抗一个随时可能到来的灾难。'},
+  '童年金钱创伤':{name:'剧本继承者',desc:'你以为自己已经和父母不一样了。但你处理钱的方式，那些让你不舒服的部分，几乎是原版复刻。'},
+};
+
+let cur=0, ans=new Array(30).fill(null);
 
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -292,7 +259,7 @@ function showPage(id){
 }
 
 function startQuiz(){
-  cur=0; ans=new Array(28).fill(null);
+  cur=0; ans=new Array(30).fill(null);
   showPage('p-quiz');
   renderQ(0);
 }
@@ -301,17 +268,17 @@ function renderQ(i){
   const d=QS[i];
   let html='';
   if(d.ch) html+=`<div class="ch-marker"><span class="ch-marker-text">${d.ch}</span><div class="ch-marker-line"></div></div>`;
-  html+=`<div class="q-body"><div class="q-num">Q${i+1} · 28</div><div class="q-text">${d.q}</div><div class="opts">`;
+  html+=`<div class="q-body"><div class="q-num">Q${i+1} · 30</div><div class="q-text">${d.q}</div><div class="opts">`;
   OPTS.forEach((o,j)=>{
     html+=`<div class="opt${ans[i]===j?' sel':''}" onclick="pick(${j})"><div class="opt-radio"></div><span class="opt-label">${o}</span></div>`;
   });
   html+=`</div></div>`;
   document.getElementById('q-area').innerHTML=html;
-  document.getElementById('q-count').textContent=`${i+1} / 28`;
-  document.getElementById('prog-fill').style.width=`${(i/28)*100}%`;
+  document.getElementById('q-count').textContent=`${i+1} / 30`;
+  document.getElementById('prog-fill').style.width=`${(i/30)*100}%`;
   for(let k=i;k>=0;k--){if(QS[k].ch){document.getElementById('ch-label').textContent=QS[k].ch;break;}}
   const btn=document.getElementById('btn-next');
-  btn.textContent=i===27?'查看我的报告 ✦':'下一题';
+  btn.textContent=i===29?'查看我的报告 ✦':'下一题';
   btn.classList.toggle('on',ans[i]!==null);
   document.getElementById('p-quiz').scrollTop=0;
 }
@@ -324,7 +291,7 @@ function pick(j){
 
 function nextQ(){
   if(ans[cur]===null) return;
-  if(cur<27){cur++;renderQ(cur);}
+  if(cur<29){cur++;renderQ(cur);}
   else{showPage('p-loading');generateReport();}
 }
 
@@ -402,14 +369,8 @@ async function generateReport(){
     "",
     "===专属金句===",
     "18-25字，直接陈述一个让人停住的事实，不用疗愈丰盛等词"
-  ].join("\n")
+  ].join("\n");
 
-
-
-
-
-
-  // 更新loading提示
   const loadingH = document.querySelector('.loading-h');
   const loadingP = document.querySelector('.loading-p');
   if(loadingH) loadingH.textContent = '正在生成你的专属报告';
@@ -422,7 +383,6 @@ async function generateReport(){
       body: JSON.stringify({prompt})
     });
 
-    // 流式读取原始SSE
     const reader = r.body.getReader();
     const decoder = new TextDecoder();
     let fullText = '';
@@ -432,18 +392,15 @@ async function generateReport(){
     while(true){
       const {done, value} = await reader.read();
       if(done) break;
-
       buf += decoder.decode(value, {stream: true});
       const lines = buf.split('\n');
       buf = lines.pop();
-
       for(const line of lines){
         const t = line.trim();
         if(!t || t === 'data: [DONE]') continue;
         if(!t.startsWith('data: ')) continue;
         try{
           const j = JSON.parse(t.slice(6));
-          // 原始SSE格式：choices[0].delta.content
           const delta = j.choices?.[0]?.delta?.content;
           if(delta){
             fullText += delta;
@@ -456,30 +413,20 @@ async function generateReport(){
       }
     }
 
-    console.log('接收完成，总字数:', fullText.length, '前200字:', fullText.slice(0,200));
+    if(!fullText){ renderResult(scores, type, ''); return; }
 
-    if(!fullText){
-      console.error('fullText为空');
-      renderResult(scores, type, '');
-      return;
-    }
-
-    // 清理Markdown格式符号
     const cleanText = fullText
       .replace(/\*\*(.+?)\*\*/gs, '$1')
       .replace(/\*(.+?)\*/gs, '$1')
       .replace(/#{1,6}\s/g, '')
       .replace(/`([^`]+)`/g, '$1');
 
-    console.log('parseAI结果:', JSON.stringify(parseAI(cleanText)));
     renderResult(scores, type, cleanText);
 
   }catch(e){
-    console.error('请求失败:', e);
     renderResult(scores, type, '');
   }
 }
-
 
 function parseAI(text){
   const out={};
@@ -488,42 +435,22 @@ function parseAI(text){
   return out;
 }
 
-// 安全转义：防止AI返回内容中的特殊字符破坏HTML
-function safe(str){
-  if(!str) return '';
-  return str
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
-}
-
-// 安全换行转换（在safe之后调用）
-function safeLines(str){
-  return safe(str).replace(/\n/g,'<br>');
-}
-
-// 用DOM节点方式设置内容，完全避免模板字符串被AI内容截断
 function setBlock(container, tag, head, body, bodyStyle){
   const block = document.createElement('div');
   block.className = 'a-block';
-
   const tagEl = document.createElement('div');
   tagEl.className = 'a-tag';
   tagEl.textContent = tag;
   block.appendChild(tagEl);
-
   const headEl = document.createElement('div');
   headEl.className = 'a-head';
   headEl.textContent = head;
   block.appendChild(headEl);
-
   const bodyEl = document.createElement('div');
   bodyEl.className = 'a-body';
   if(bodyStyle) bodyEl.style.cssText = bodyStyle;
   bodyEl.innerHTML = body.replace(/\n/g,'<br>');
   block.appendChild(bodyEl);
-
   container.appendChild(block);
 }
 
@@ -543,115 +470,84 @@ function renderResult(scores,type,aiText){
   const quote      = p['专属金句']  || '每一次看见自己，都是疗愈的开始。';
   const dimDetails = p['维度解读']  || '';
 
-  savedRelations=relations; savedActions=actions;
-  savedQuote=quote; savedHidden=hidden; savedInsight=insight;
-
-  // 构建六维条形图 HTML（只含分数和颜色，安全）
-  let dimHtml='';
-  for(const[dim,val]of Object.entries(scores)){
-    if(dim==='_total') continue;
-    dimHtml+='<div class="dim-row"><div class="dim-top"><span class="dim-name">'+dim+'</span><span class="dim-pct">'+val.pct+'</span></div><div class="dim-track"><div class="dim-bar" data-w="'+val.pct+'" style="background:'+val.color+'"></div></div></div>';
-  }
-
-  // 解析"你是哪种人"（用文本节点，不用innerHTML）
   const whoLines = whoAmI.split('\n').filter(l=>l.trim());
   const whoName = whoLines[0] || ('「'+type.name+'」');
   const whoDesc = whoLines.slice(1).join('\n') || type.desc;
 
-  // 构建静态骨架（不含任何AI内容）
   const rc = document.getElementById('result-content');
   rc.innerHTML = '';
 
-  // Hero区
+  // Hero
   const hero = document.createElement('div');
   hero.className = 'r-hero';
   hero.innerHTML = '<div class="r-eyebrow">你的专属金钱心理报告</div>'
     + '<div class="r-title" id="r-title-el"></div>'
     + '<div class="ring-wrap"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="54"/><circle class="ring-val" id="ring-c" cx="60" cy="60" r="54"/></svg><div class="ring-inner"><span class="ring-num" id="ring-n">0</span><div class="ring-label">综合指数</div></div></div>'
-    + '<p class="r-hero-desc" id="total-desc-el" style="font-size:clamp(12px,2.5vw,14px);color:var(--gold-dim);margin-top:8px;"></p>';
+    + '<p class="r-hero-desc" id="total-desc-el"></p>';
   rc.appendChild(hero);
-  // 用textContent安全设置AI内容
   document.getElementById('r-title-el').textContent = title;
   document.getElementById('total-desc-el').textContent = totalDesc;
 
-  // 内容区
   const wrap = document.createElement('div');
   wrap.className = 'content-wrap';
 
-  // 六维图
+  // 五维图
+  let dimHtml='';
+  for(const[dim,val]of Object.entries(scores)){
+    if(dim==='_total') continue;
+    dimHtml+='<div class="dim-row"><div class="dim-top"><span class="dim-name">'+dim+'</span><span class="dim-pct">'+val.pct+'</span></div><div class="dim-track"><div class="dim-bar" data-w="'+val.pct+'" style="background:'+val.color+'"></div></div></div>';
+  }
   const dimSec = document.createElement('div');
   dimSec.className = 'dims-sec';
-  dimSec.innerHTML = '<div class="sec-head">六维雷达画像</div>' + dimHtml;
+  dimSec.innerHTML = '<div class="sec-head">五维画像</div>' + dimHtml;
   wrap.appendChild(dimSec);
 
-  // 分析区
   const analysis = document.createElement('div');
   analysis.className = 'analysis-wrap';
 
-  // 你是哪种人
   setBlock(analysis, '你是哪种人', whoName, whoDesc, 'font-size:clamp(14px,3vw,17px);color:var(--text);font-weight:400;');
-
-  // 核心模式
   setBlock(analysis, '核心模式', '关于你和钱的真相', insight);
-
-  // 隐藏规律
   if(hidden) setBlock(analysis, '你最需要注意的一件事', '隐藏规律', hidden);
 
-  // 维度解读（按 --- 分段，兼容各种格式）
+  // 维度解读
   if(dimDetails){
-    // 先清理掉开头多余的---
     const cleanedDim = dimDetails.replace(/^[\s\-]+\n/, '').trim();
     cleanedDim.split(/\n?\s*---\s*\n?/).filter(b=>b.trim()).forEach(block=>{
       const blines = block.trim().split('\n');
-      // 找第一个非空行作为标题
       let headIdx = 0;
       while(headIdx < blines.length && !blines[headIdx].trim()) headIdx++;
       const rawHead = blines[headIdx]||'';
       const bbody = blines.slice(headIdx+1).join('\n').trim();
       if(!rawHead) return;
-
-      // 把 "家族传递（83分）：「副标题」" 拆成主标题和副标题
-      // 格式：维度名（分数）：「副标题」
       const colonIdx = rawHead.indexOf('：');
       const bhead = colonIdx > -1 ? rawHead.slice(0, colonIdx) : rawHead;
       const bsub  = colonIdx > -1 ? rawHead.slice(colonIdx + 1).replace(/^「|」$/g,'').trim() : '';
-
       const dimBlock = document.createElement('div');
       dimBlock.className = 'a-block';
-
       const tagEl = document.createElement('div');
       tagEl.className = 'a-tag';
       tagEl.textContent = '维度解读';
       dimBlock.appendChild(tagEl);
-
-      // 主标题（维度名+分数）
       const headEl = document.createElement('div');
       headEl.className = 'a-head';
       headEl.textContent = bhead;
       dimBlock.appendChild(headEl);
-
-      // 副标题（「」里的内容）
       if(bsub){
         const subEl = document.createElement('div');
         subEl.style.cssText = 'font-family:"Noto Serif SC",serif;font-size:clamp(14px,3vw,17px);color:var(--gold);margin:6px 0 14px;font-weight:400;line-height:1.5;';
         subEl.textContent = '「' + bsub + '」';
         dimBlock.appendChild(subEl);
       }
-
-      // 正文
       const bodyEl = document.createElement('div');
       bodyEl.className = 'a-body';
       bodyEl.innerHTML = bbody.replace(/\n/g,'<br>');
       dimBlock.appendChild(bodyEl);
-
       analysis.appendChild(dimBlock);
     });
   }
 
-  // 关系影响
   if(relations) setBlock(analysis, '关系影响', '这如何影响你和身边人', relations);
 
-  // 疗愈行动
   if(actions){
     const actionWrap = document.createElement('div');
     actionWrap.className = 'a-block';
@@ -681,7 +577,6 @@ function renderResult(scores,type,aiText){
   quoteCard.appendChild(quoteText);
   quoteWrap.appendChild(quoteCard);
   wrap.appendChild(quoteWrap);
-
   rc.appendChild(wrap);
 
   showPage('p-result');
@@ -692,12 +587,6 @@ function renderResult(scores,type,aiText){
     const t=setInterval(()=>{n=Math.min(n+2,total);if(el)el.textContent=n;if(n>=total)clearInterval(t);},28);
     document.querySelectorAll('.dim-bar').forEach(b=>setTimeout(()=>{b.style.width=b.dataset.w+'%';},200));
   },150);
-}
-
-
-
-function shareIt(){
-  alert('请长按屏幕截图，保存后分享给朋友 ✦\n\n让更多人来测测自己的金钱心理');
 }
 </script>
 </body>
