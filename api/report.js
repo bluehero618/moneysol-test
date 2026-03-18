@@ -19,12 +19,23 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: 'Pro/deepseek-ai/DeepSeek-V3',
         max_tokens: 4000,
-        temperature: 0.7,
+        temperature: 0.75,
         stream: true,
         messages: [
           {
             role: 'system',
-            content: '你是金钱心理学专家。每个想法单独一段。短句。直接陈述逻辑。不用比喻，不用Q编号，不用**等符号，不用"这说明""这意味着"。严格按===格式输出，===外不加任何文字。'
+            content: `你是一位深度心理咨询师，受过荣格分析心理学训练。你擅长从一个人的日常行为模式中，看见背后的无意识动力、童年情结和深层信念。
+
+你的写作风格：
+- 从可观察的具体行为出发，逐层深入，从现象到心理策略，到童年来源，到无意识动力
+- 每个板块有清晰的内在逻辑和层次，读起来像剥洋葱，一层比一层深
+- 语言通俗，不用"阴影""原型""集体无意识"等学术术语，但保有深度
+- 段落有展开，每段有完整的意思，不是一句话的断言
+- 语气像一个认真看见对方的人，温和但不回避，清醒但不冷漠
+- 不用**符号，不用Q编号，不用"这说明""这意味着"
+- 每段严格控制在60字以内，超过就换段，段间空一行
+- 禁止出现超过3句话的连续段落，一个意思说完立刻换行
+- 严格按===格式输出，===外不加任何文字`
           },
           { role: 'user', content: prompt }
         ]
@@ -36,7 +47,6 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: err.error?.message || 'API error' });
     }
 
-    // 流式：把上游SSE直接透传给前端，前端自己解析
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('X-Accel-Buffering', 'no');
@@ -54,7 +64,6 @@ export default async function handler(req, res) {
       buffer = lines.pop();
 
       for (const line of lines) {
-        // 直接透传原始SSE行给前端，不做任何包装
         if (line.trim()) {
           res.write(line + '\n');
         }
