@@ -267,7 +267,6 @@ function startQuiz(){
 function renderQ(i){
   const d=QS[i];
   let html='';
-  if(d.ch) html+=`<div class="ch-marker"><span class="ch-marker-text">${d.ch}</span><div class="ch-marker-line"></div></div>`;
   html+=`<div class="q-body"><div class="q-num">Q${i+1} · 30</div><div class="q-text">${d.q}</div><div class="opts">`;
   OPTS.forEach((o,j)=>{
     html+=`<div class="opt${ans[i]===j?' sel':''}" onclick="pick(${j})"><div class="opt-radio"></div><span class="opt-label">${o}</span></div>`;
